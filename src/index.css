@@ -28,3 +28,17 @@ a, button {
 .btn {
   letter-spacing: 1px;
 }
+
+
+/* Animation de chute du haut vers le bas */
+@keyframes fall {
+  0% { top: -10%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.animate-fall {
+  /* La durée ici doit correspondre exactement au FALL_DURATION dans React */
+  animation: fall 3s linear forwards;
+}
