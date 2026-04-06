@@ -35,7 +35,7 @@ export default function Lobby() {
           Trio de saxophones + batterie dédié aux musiques de jeux vidéo.
         </p>
 
-        <div className="flex gap-4 mt-4">
+        <div className="flex flex-wrap justify-center gap-4 mt-4">
           <Link to="/next" className="btn btn-primary">
             ▶ Next Stage
           </Link>
