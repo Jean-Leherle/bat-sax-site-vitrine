@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+body{
+  background: #0a0a0a;
+  color: #00ffcc;
+  cursor: none; /* pour curseur custom */
+  font-family: system-ui, sans-serif;
+  background: radial-gradient(circle at center, #0a0a0a, #000000);
+}
+/* ✨ Glow effet néon */
+.neon {
+  font-family: 'Press Start 2P', cursive;
+  text-shadow:
+    0 0 5px #00ffcc,
+    0 0 10px #00ffcc,
+    0 0 20px #00ffcc;
+}
+
+
+a, button {
+  cursor: none;
+}
+
+.btn {
+  letter-spacing: 1px;
+}
