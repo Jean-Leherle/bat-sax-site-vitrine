@@ -8,10 +8,11 @@ type Props = {
 };
 
 export type Concert = {
-  id: string;
-  date: string;
+  id: number;
   name: string;
-  location: string;
+  date: string;
+  location: string; // "Le Gotham - Troyes"
+  locationLink?: string; // "https://maps.app.goo.gl/..." (le vrai lien de partage Google Maps)
   description?: string;
   imageUrl?: string;
   videoUrl?: string;

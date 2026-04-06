@@ -32,7 +32,7 @@ export default function ConcertCard({ concert, isPast }: Props) {
     year: 'numeric'
   });
 
-  const mapsLink = `http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(concert.location)}`;
+  const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(concert.location)}`;
 
   return (
     <div className={`border p-4 rounded-xl transition-all bg-[#0a0a0a] hover:shadow-[0_0_15px_#00ffcc] ${isCompleted ? 'border-green-500' : 'border-primary'}`}>
@@ -42,7 +42,7 @@ export default function ConcertCard({ concert, isPast }: Props) {
           <p className="text-sm opacity-90 text-primary">{formattedDate}</p>
           
           <a 
-            href={mapsLink}
+            href={concert.locationLink ||mapsLink}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs opacity-70 mt-1 inline-block hover:text-primary transition-colors cursor-none"
