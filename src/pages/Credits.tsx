@@ -89,7 +89,6 @@ export default function Credits() {
   // Le minuteur global automatique
   const [tick, setTick] = useState(0);
   
-  // NOUVEAU : Un dictionnaire pour mémoriser les clics individuels. Ex: { "instruments": 2, "Citation préférée": 1 }
   const [manualOffsets, setManualOffsets] = useState<Record<string, number>>({});
 
   // Réinitialiser les décalages quand on change de membre (pour que ça reparte à zéro propre)
@@ -97,7 +96,6 @@ export default function Credits() {
     setManualOffsets({});
   }, [selectedMember]);
 
-  // NOUVEAU : La fonction prend maintenant la "clé" du champ qu'on a cliqué
   const handleManualTick = (e: React.MouseEvent, fieldKey: string) => {
     e.stopPropagation();
     setManualOffsets(prev => ({

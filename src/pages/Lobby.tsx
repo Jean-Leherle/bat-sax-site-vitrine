@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MiniGame from "../components/MiniGame";
+import { CREDITS_UNLOCK_SCORE } from "../hooks/useMiniGame"; 
 
 export default function Lobby() {
   const [creditsUnlocked, setCreditsUnlocked] = useState(false);
 
-  // Au chargement, on vérifie si le joueur a déjà débloqué les crédits lors d'une visite précédente
   useEffect(() => {
     const isUnlocked = localStorage.getItem("batsax-credits-unlocked");
     if (isUnlocked === "true") {
@@ -13,12 +13,10 @@ export default function Lobby() {
     }
   }, []);
 
-  // Fonction appelée à chaque fois que le score change dans le MiniGame
   const handleScoreUpdate = (score: number) => {
-    // Si on atteint 2026 points et que ce n'était pas encore débloqué
-    if (score >= 2026 && !creditsUnlocked) {
+    if (score >= CREDITS_UNLOCK_SCORE && !creditsUnlocked) {
       setCreditsUnlocked(true);
-      localStorage.setItem("batsax-credits-unlocked", "true"); // Sauvegarde permanente !
+      localStorage.setItem("batsax-credits-unlocked", "true"); 
     }
   };
 

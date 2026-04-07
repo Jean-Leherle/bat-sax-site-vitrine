@@ -1,20 +1,40 @@
-import { useMiniGame, TRACKS } from "../hooks/useMiniGame";
+import { useMiniGame, TRACKS, GAME_MILESTONES } from "../hooks/useMiniGame";
 
 type Props = {
   onScoreUpdate?: (score: number) => void;
 };
 
 export default function MiniGame({ onScoreUpdate }: Props) {
-  // On récupère handleTrackHit
-  const { scoreState, comboState, arrows, feedbacks, currentActiveTracks, handleTrackHit } = useMiniGame(onScoreUpdate);
+  const { scoreState, bestScoreState, comboState, arrows, feedbacks, currentActiveTracks, handleTrackHit } = useMiniGame(onScoreUpdate);
 
   const multiplier = comboState >= 50 ? 4 : (comboState >= 10 ? 2 : 1);
+  
+  // On utilise directement GAME_MILESTONES !
+  const nextMilestone = GAME_MILESTONES.find(m => scoreState < m.score) || GAME_MILESTONES[GAME_MILESTONES.length - 1];
 
   return (
-    // La div parente a pointer-events-none pour ne pas bloquer tout l'écran
     <div className="absolute inset-0 pointer-events-none overflow-hidden flex flex-col items-center z-0 opacity-80">
       
-      {/* UI SCORE & COMBO */}
+      <div className="absolute top-4 w-full max-w-4xl px-4 md:px-8 flex justify-between items-start">
+        
+        <div className="flex flex-col items-start gap-1">
+          <span className="text-[8px] md:text-[10px] font-['Press_Start_2P'] text-primary opacity-80">
+            NEXT: {nextMilestone.name}
+          </span>
+          <span className="text-xs md:text-sm font-['Press_Start_2P'] text-white/80">
+            {nextMilestone.score === Infinity ? "MAX" : nextMilestone.score.toString().padStart(5, "0")}
+          </span>
+        </div>
+
+        <div className="flex flex-col items-end gap-1">
+          <span className="text-[8px] md:text-[10px] font-['Press_Start_2P'] text-yellow-400 opacity-80">HI-SCORE</span>
+          <span className="text-xs md:text-sm font-['Press_Start_2P'] text-yellow-400 neon">
+            {bestScoreState.toString().padStart(5, "0")}
+          </span>
+        </div>
+        
+      </div>
+
       <div className="absolute top-10 flex flex-col items-center gap-1">
         <span className="text-xs font-['Press_Start_2P'] tracking-widest text-primary opacity-80">SCORE</span>
         <span className="text-4xl neon text-white">{scoreState.toString().padStart(5, "0")}</span>
@@ -36,15 +56,13 @@ export default function MiniGame({ onScoreUpdate }: Props) {
         {TRACKS.filter(track => currentActiveTracks.includes(track.id)).map((track) => (
           <div 
             key={track.id} 
-            // NOUVEAU : On rend cette colonne cliquable (pointer-events-auto) et optimisée pour le tactile
             className="relative w-20 h-full pointer-events-auto cursor-pointer touch-manipulation select-none active:bg-white/5 transition-colors"
             onPointerDown={(e) => {
-              e.preventDefault(); // Empêche les comportements natifs du navigateur
+              e.preventDefault(); 
               handleTrackHit(track.id);
             }}
           >
             
-            {/* Zone de validation */}
             <div 
               className={`absolute w-full h-16 top-[80%] border-y-4 flex items-center justify-center transition-colors duration-100 ${
                 feedbacks[track.id] === "success" ? "border-green-500 bg-green-500/30 shadow-[0_0_20px_#22c55e]" : 
@@ -54,7 +72,6 @@ export default function MiniGame({ onScoreUpdate }: Props) {
               <span className="text-2xl grayscale opacity-30 pointer-events-none">{track.symbol}</span>
             </div>
 
-            {/* Rendu des Flèches */}
             {arrows.filter(a => a.track === track.id).map(arrow => (
               <div 
                 key={arrow.id}

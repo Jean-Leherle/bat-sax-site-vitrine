@@ -11,8 +11,10 @@ export default function Navbar() {
   return (
     <div className="navbar bg-base-200 border-b border-base-300 px-6">
       <div className="flex-1">
-        <Link to="/" className="text-xl neon">
-          batSax
+        <Link to="/" 
+        className="text-xl neon inline-block transition-all duration-300 hover:scale-110 hover:text-white hover:animate-pulse"
+        >
+          BatSax
         </Link>
       </div>
 
