@@ -118,10 +118,6 @@ export default function Credits() {
     }
   };
 
-  const hasAnyMultipleValues = (member: Member) => {
-    return member.instruments.length > 1 || member.customFields.some(field => field.values.length > 1);
-  };
-
   return (
     <div className="p-6 text-center flex flex-col items-center w-full relative">
       <h1 className="neon text-3xl mb-2">Crédits</h1>
