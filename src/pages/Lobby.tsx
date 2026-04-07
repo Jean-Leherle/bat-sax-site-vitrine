@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MiniGame from "../components/MiniGame";
+import { CREDITS_UNLOCK_SCORE } from "../hooks/useMiniGame"; 
 
 export default function Lobby() {
   const [creditsUnlocked, setCreditsUnlocked] = useState(false);
 
-  // Au chargement, on vérifie si le joueur a déjà débloqué les crédits lors d'une visite précédente
   useEffect(() => {
     const isUnlocked = localStorage.getItem("batsax-credits-unlocked");
     if (isUnlocked === "true") {
@@ -13,23 +13,20 @@ export default function Lobby() {
     }
   }, []);
 
-  // Fonction appelée à chaque fois que le score change dans le MiniGame
   const handleScoreUpdate = (score: number) => {
-    // Si on atteint 2026 points et que ce n'était pas encore débloqué
-    if (score >= 2026 && !creditsUnlocked) {
+    if (score >= CREDITS_UNLOCK_SCORE && !creditsUnlocked) {
       setCreditsUnlocked(true);
-      localStorage.setItem("batsax-credits-unlocked", "true"); // Sauvegarde permanente !
+      localStorage.setItem("batsax-credits-unlocked", "true"); 
     }
   };
 
   return (
     <div className="relative flex flex-col items-center justify-center w-full min-h-[70vh]">
       
-      {/* On passe notre fonction au mini jeu */}
       <MiniGame onScoreUpdate={handleScoreUpdate} />
 
       <div className="text-center flex flex-col items-center gap-8 z-10 p-6 bg-black/40 rounded-3xl backdrop-blur-sm border border-gray-900 transition-all duration-500">
-        <h1 className="text-4xl neon">batSax</h1>
+        <h1 className="text-4xl neon">BatSax</h1>
 
         <p className="text-sm opacity-70 max-w-md">
           Trio de saxophones + batterie dédié aux musiques de jeux vidéo.
@@ -37,14 +34,12 @@ export default function Lobby() {
 
         <div className="flex flex-wrap justify-center gap-4 mt-4">
           <Link to="/next" className="btn btn-primary">
-            ▶ Next Stage
+            ▶ Prochain boss
           </Link>
-
           <Link to="/saves" className="btn btn-outline">
-            Older Saves
+            Sauvegardes précédentes
           </Link>
 
-          {/* Affichage conditionnel des crédits avec une belle animation */}
           {creditsUnlocked && (
             <Link 
               to="/credits" 

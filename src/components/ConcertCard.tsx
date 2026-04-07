@@ -34,38 +34,62 @@ export default function ConcertCard({ concert, isPast }: Props) {
 
   const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(concert.location)}`;
 
+  const generateCalendarLink = () => {
+    const startDate = new Date(concert.date);
+    
+    // Format YYYYMMDD requis par Google
+    const startStr = `${startDate.getFullYear()}${String(startDate.getMonth() + 1).padStart(2, '0')}${String(startDate.getDate()).padStart(2, '0')}`;
+    
+    // Pour un événement sur la journée, Google requiert que la date de fin soit le lendemain
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1);
+    const endStr = `${endDate.getFullYear()}${String(endDate.getMonth() + 1).padStart(2, '0')}${String(endDate.getDate()).padStart(2, '0')}`;
+
+    const title = encodeURIComponent(`batSax : ${concert.name}`);
+    const location = encodeURIComponent(concert.location);
+    const details = encodeURIComponent(concert.description || "Retrouvez le trio batSax en concert !");
+
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}&location=${location}`;
+  };
+
   return (
     <div className={`border p-4 rounded-xl transition-all bg-[#0a0a0a] hover:shadow-[0_0_15px_#00ffcc] ${isCompleted ? 'border-green-500' : 'border-primary'}`}>
       <div className="flex justify-between items-start mb-4">
         <div>
           <h2 className="neon text-lg">{concert.name}</h2>
-          <p className="text-sm opacity-90 text-primary">{formattedDate}</p>
           
           <a 
-            href={concert.locationLink ||mapsLink}
+            href={generateCalendarLink()}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs opacity-70 mt-1 inline-block hover:text-primary transition-colors cursor-none"
+            className="text-sm opacity-90 text-primary hover:text-white transition-colors inline-block hover:scale-105"
+            title="Ajouter à Google Agenda"
+          >
+            <span className="hover:animate-pulse">📅 {formattedDate}</span>
+          </a>
+          <br/>
+          
+          <a 
+            href={concert.locationLink || mapsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs opacity-70 mt-1 inline-block hover:text-primary transition-colors hover:scale-105"
           >
             📍 {concert.location}
           </a>
         </div>
         
         {/* Affichage conditionnel des boutons */}
-        {isPast ? (
+        {isPast && (
           <button 
             onClick={toggleCompleted}
-            className={`btn btn-xs font-['Press_Start_2P'] text-[8px] cursor-none ${
+            className={`btn btn-xs font-['Press_Start_2P'] text-[8px] p-4 ${
               isCompleted 
                 ? 'bg-green-500 hover:bg-green-600 text-black border-none' 
                 : 'btn-outline border-gray-500 text-gray-400 hover:border-green-500 hover:text-green-500'
             }`}
           >
-            {isCompleted ? '✓ COMPLETED' : 'MARK COMPLETED'}
-          </button>
-        ) : (
-          <button className="btn btn-xs btn-primary font-['Press_Start_2P'] text-[8px] cursor-none opacity-50 cursor-not-allowed">
-            LOCKED
+            {isCompleted ? 'Perfect !' : 'Concert réussi ?'}
           </button>
         )}
       </div>
@@ -89,7 +113,7 @@ export default function ConcertCard({ concert, isPast }: Props) {
               href={concert.videoUrl} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-xs text-primary hover:underline cursor-none"
+              className="text-xs text-primary hover:underline"
             >
               ▶ Voir la vidéo du concert
             </a>

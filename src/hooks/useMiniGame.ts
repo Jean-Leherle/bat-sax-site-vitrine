@@ -16,7 +16,24 @@ const IDEAL_TIME = FALL_DURATION * (90 / 110);
 const MARGIN = 200; 
 const MISS_MARGIN = 500;
 
+export const CREDITS_UNLOCK_SCORE = 1200; // La valeur officielle pour débloquer les crédits
+
+export const GAME_MILESTONES = [
+  { score: 100, name: "ADAGIO", difficulty: { tracks: ["down"] as TrackId[], minTicks: 4, maxTicks: 6, doubleChance: 0 } },
+  { score: 300, name: "MODERATO", difficulty: { tracks: ["up", "down"] as TrackId[], minTicks: 3, maxTicks: 5, doubleChance: 0 } },
+  { score: 600, name: "ALLEGRO", difficulty: { tracks: ["up", "down"] as TrackId[], minTicks: 2, maxTicks: 4, doubleChance: 0.1 } },
+  { score: CREDITS_UNLOCK_SCORE, name: "PRESTO (CRÉDITS)", difficulty: { tracks: ["left", "up", "down", "right"] as TrackId[], minTicks: 2, maxTicks: 3, doubleChance: 0.2 } },
+  { score: Infinity, name: "VIRTUOSO", difficulty: { tracks: ["left", "up", "down", "right"] as TrackId[], minTicks: 1, maxTicks: 2, doubleChance: 0.3 } }
+];
+// ------------------------------------------------------------------
+
 export function useMiniGame(onScoreUpdate?: (score: number) => void) {
+  const [bestScoreState, setBestScoreState] = useState(() => {
+    const saved = localStorage.getItem("batsax-best-score");
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  const bestScoreRef = useRef(bestScoreState);
+
   const [scoreState, setScoreState] = useState(0);
   const scoreRef = useRef(0);
   
@@ -35,6 +52,12 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
     scoreRef.current = Math.max(0, updater(scoreRef.current));
     setScoreState(scoreRef.current);
     if (onScoreUpdate) onScoreUpdate(scoreRef.current); 
+
+    if (scoreRef.current > bestScoreRef.current) {
+      bestScoreRef.current = scoreRef.current;
+      setBestScoreState(scoreRef.current);
+      localStorage.setItem("batsax-best-score", scoreRef.current.toString());
+    }
   };
   
   const setCombo = (val: number | ((prev: number) => number)) => {
@@ -54,14 +77,10 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
   };
 
   const getDifficulty = (currentScore: number) => {
-    if (currentScore < 100) return { tracks: ["down"] as TrackId[], minTicks: 4, maxTicks: 6, doubleChance: 0 };
-    if (currentScore < 300) return { tracks: ["up", "down"] as TrackId[], minTicks: 3, maxTicks: 5, doubleChance: 0 };
-    if (currentScore < 600) return { tracks: ["up", "down"] as TrackId[], minTicks: 2, maxTicks: 4, doubleChance: 0.1 };
-    if (currentScore < 1200) return { tracks: ["left", "up", "down", "right"] as TrackId[], minTicks: 2, maxTicks: 3, doubleChance: 0.2 };
-    return { tracks: ["left", "up", "down", "right"] as TrackId[], minTicks: 1, maxTicks: 2, doubleChance: 0.3 };
+    const milestone = GAME_MILESTONES.find(m => currentScore < m.score) || GAME_MILESTONES[GAME_MILESTONES.length - 1];
+    return milestone.difficulty;
   };
 
-  // --- NOUVEAU : Fonction centrale de validation (clavier ET tactile) ---
   const handleTrackHit = (track: TrackId) => {
     const currentArrows = arrowsRef.current;
     const activeIndex = currentArrows.findIndex(a => a.status === "active" && a.track === track);
@@ -155,20 +174,20 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
       const trackObj = TRACKS.find(t => t.keys.includes(key));
       if (!trackObj) return; 
       
-      // On réutilise notre fonction
       handleTrackHit(trackObj.id);
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  });
 
   return {
     scoreState,
+    bestScoreState, 
     comboState,
     arrows,
     feedbacks,
     currentActiveTracks: getDifficulty(scoreState).tracks,
-    handleTrackHit // On exporte la fonction pour l'interface
+    handleTrackHit
   };
 }
