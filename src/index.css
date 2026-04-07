@@ -11,13 +11,28 @@ body{
   font-family: system-ui, sans-serif;
   background: radial-gradient(circle at center, #0a0a0a, #000000);
 }
-/* ✨ Glow effet néon */
+/* ✨ Glow effet néon (Adouci pour plus de lisibilité) */
 .neon {
   font-family: 'Press Start 2P', cursive;
   text-shadow:
-    0 0 5px #00ffcc,
-    0 0 10px #00ffcc,
-    0 0 20px #00ffcc;
+    0 0 2px #00ffcc,
+    0 0 6px rgba(0, 255, 204, 0.6);
+}
+
+/* Animation de glissement pour les textes tournants */
+@keyframes slideRightFade {
+  0% { 
+    opacity: 0; 
+    transform: translateX(-15px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+.animate-slide-right {
+  animation: slideRightFade 0.5s ease-out forwards;
 }
 
 
@@ -29,6 +44,7 @@ a, button {
   letter-spacing: 1px;
 }
 
+/* MINI JEU */
 
 /* Animation de chute du haut vers le bas */
 @keyframes fall {

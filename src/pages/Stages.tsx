@@ -22,7 +22,7 @@ export default function Stages({ mode }: Props) {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const title = mode === "upcoming" ? "Next Stage" : "Older Saves";
+  const title = mode === "upcoming" ? "▶ Prochain boss" : "Sauvegardes précédentes";
   const jokeSource = ['ton petit frere', 'ton chat', 'le pape', 'Chuck Norris (RIP)', 'un Enderman', 'Bowser', 'ta mère', ]
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function Stages({ mode }: Props) {
       }
 
       // 2. On crée une promesse qui se résout au bout de 1500ms (1.5s)
-      const minimumDelay = new Promise(resolve => setTimeout(resolve, 1500));
+      const minimumDelay = new Promise(resolve => setTimeout(resolve, 1000));
 
       // 3. On attend que la requête Supabase ET le délai de 1.5s soient terminés
       const [response] = await Promise.all([query, minimumDelay]);

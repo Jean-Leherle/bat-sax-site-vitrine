@@ -52,22 +52,18 @@ export default function ConcertCard({ concert, isPast }: Props) {
         </div>
         
         {/* Affichage conditionnel des boutons */}
-        {isPast ? (
+        {isPast && (
           <button 
             onClick={toggleCompleted}
-            className={`btn btn-xs font-['Press_Start_2P'] text-[8px] cursor-none ${
+            className={`btn btn-xs font-['Press_Start_2P'] text-[8px] p-4 cursor-none ${
               isCompleted 
                 ? 'bg-green-500 hover:bg-green-600 text-black border-none' 
                 : 'btn-outline border-gray-500 text-gray-400 hover:border-green-500 hover:text-green-500'
             }`}
           >
-            {isCompleted ? '✓ COMPLETED' : 'MARK COMPLETED'}
+            {isCompleted ? 'Perfect !' : 'Concert réussie ?'}
           </button>
-        ) : (
-          <button className="btn btn-xs btn-primary font-['Press_Start_2P'] text-[8px] cursor-none opacity-50 cursor-not-allowed">
-            LOCKED
-          </button>
-        )}
+        ) }
       </div>
 
       {concert.description && (

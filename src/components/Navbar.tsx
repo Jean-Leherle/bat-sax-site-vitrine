@@ -18,10 +18,10 @@ export default function Navbar() {
 
       <div className="flex gap-2">
         <Link to="/next" className={linkClass("/next")}>
-          Next Stage
+          Prochain boss
         </Link>
         <Link to="/saves" className={linkClass("/saves")}>
-          Older Saves
+          Sauvegardes précédentes
         </Link>
       </div>
     </div>
