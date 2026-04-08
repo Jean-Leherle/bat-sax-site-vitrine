@@ -1,22 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import MiniGame from "../components/MiniGame";
 import { CREDITS_UNLOCK_SCORE } from "../hooks/useMiniGame"; 
+import { useAudio } from "../contexts/AudioContext"; 
 
 export default function Lobby() {
   const [creditsUnlocked, setCreditsUnlocked] = useState(false);
+  
+  const { playRandomTrack, play } = useAudio();
+  
+  // Nos deux mémoires pour éviter de spammer le lecteur audio
+  const autoPlayAttempted = useRef(false);
+  const bossMusicPlayed = useRef(false); 
 
   useEffect(() => {
     const isUnlocked = localStorage.getItem("batsax-credits-unlocked");
     if (isUnlocked === "true") {
       setCreditsUnlocked(true);
     }
-  }, []);
+
+    playRandomTrack([
+      { title: "sans.", url: "/music/sans.ogg" }
+    ]);
+  }, [playRandomTrack]);
 
   const handleScoreUpdate = (score: number) => {
     if (score >= CREDITS_UNLOCK_SCORE && !creditsUnlocked) {
       setCreditsUnlocked(true);
       localStorage.setItem("batsax-credits-unlocked", "true"); 
+    }
+
+    if (score > 0 && !autoPlayAttempted.current) {
+      autoPlayAttempted.current = true;
+      play(); 
+    }
+
+    // Si on a plus de 600 points ET qu'on n'a pas encore lancé la musique de boss
+    if (score >= 600 && !bossMusicPlayed.current) {
+      bossMusicPlayed.current = true; // On verrouille pour ne le faire qu'une fois
+      
+      // Le lecteur va automatiquement s'occuper de baisser le son de "sans.", 
+      // charger Megalovania, et remonter le son !
+      playRandomTrack([
+        { title: "MEGALOVANIA", url: "/music/MEGALOVANIA.ogg" }
+      ]);
     }
   };
 
