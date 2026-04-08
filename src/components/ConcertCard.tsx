@@ -7,10 +7,8 @@ type Props = {
 };
 
 export default function ConcertCard({ concert, isPast }: Props) {
-  // État local pour savoir si le stage est complété
   const [isCompleted, setIsCompleted] = useState(false);
 
-  // Au chargement du composant, on vérifie la "carte mémoire" (localStorage)
   useEffect(() => {
     const savedState = localStorage.getItem(`batsax-stage-${concert.id}`);
     if (savedState === "true") {
@@ -18,11 +16,9 @@ export default function ConcertCard({ concert, isPast }: Props) {
     }
   }, [concert.id]);
 
-  // Fonction pour basculer l'état
   const toggleCompleted = () => {
     const newState = !isCompleted;
     setIsCompleted(newState);
-    // On sauvegarde dans le navigateur de l'utilisateur
     localStorage.setItem(`batsax-stage-${concert.id}`, String(newState));
   };
 
@@ -30,20 +26,36 @@ export default function ConcertCard({ concert, isPast }: Props) {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
-  });
+  }) + (concert.time ? ` à ${concert.time.replace(':', 'h')}` : ''); // ex: "à 20h30"
 
   const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(concert.location)}`;
 
   const generateCalendarLink = () => {
     const startDate = new Date(concert.date);
-    
-    // Format YYYYMMDD requis par Google
-    const startStr = `${startDate.getFullYear()}${String(startDate.getMonth() + 1).padStart(2, '0')}${String(startDate.getDate()).padStart(2, '0')}`;
-    
-    // Pour un événement sur la journée, Google requiert que la date de fin soit le lendemain
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 1);
-    const endStr = `${endDate.getFullYear()}${String(endDate.getMonth() + 1).padStart(2, '0')}${String(endDate.getDate()).padStart(2, '0')}`;
+    let startStr = "";
+    let endStr = "";
+
+    if (concert.time) {
+      // S'il y a une heure (ex: "20:30")
+      const [hours, minutes] = concert.time.split(':');
+      startDate.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+      
+      const endDate = new Date(startDate);
+      endDate.setHours(endDate.getHours() + 2); // On estime la durée à 2 heures
+
+      // Format requis par Google pour les événements avec heure exacte : YYYYMMDDTHHMMSS
+      const formatDT = (d: Date) => 
+        `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}00`;
+
+      startStr = formatDT(startDate);
+      endStr = formatDT(endDate);
+    } else {
+      // S'il n'y a pas d'heure (Événement sur la journée entière)
+      startStr = `${startDate.getFullYear()}${String(startDate.getMonth() + 1).padStart(2, '0')}${String(startDate.getDate()).padStart(2, '0')}`;
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+      endStr = `${endDate.getFullYear()}${String(endDate.getMonth() + 1).padStart(2, '0')}${String(endDate.getDate()).padStart(2, '0')}`;
+    }
 
     const title = encodeURIComponent(`batSax : ${concert.name}`);
     const location = encodeURIComponent(concert.location);
@@ -73,17 +85,16 @@ export default function ConcertCard({ concert, isPast }: Props) {
             href={concert.locationLink || mapsLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs opacity-70 mt-1 inline-block hover:text-primary transition-colors hover:scale-105"
+            className="text-xs opacity-70 mt-1 inline-block hover:text-primary transition-colors hover:scale-105 cursor-none"
           >
             📍 {concert.location}
           </a>
         </div>
         
-        {/* Affichage conditionnel des boutons */}
         {isPast && (
           <button 
             onClick={toggleCompleted}
-            className={`btn btn-xs font-['Press_Start_2P'] text-[8px] p-4 ${
+            className={`btn btn-xs font-['Press_Start_2P'] text-[8px] p-4 cursor-none ${
               isCompleted 
                 ? 'bg-green-500 hover:bg-green-600 text-black border-none' 
                 : 'btn-outline border-gray-500 text-gray-400 hover:border-green-500 hover:text-green-500'
@@ -113,7 +124,7 @@ export default function ConcertCard({ concert, isPast }: Props) {
               href={concert.videoUrl} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-xs text-primary hover:underline"
+              className="text-xs text-primary hover:underline cursor-none"
             >
               ▶ Voir la vidéo du concert
             </a>

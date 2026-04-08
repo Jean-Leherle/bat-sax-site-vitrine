@@ -35,12 +35,12 @@ export default function Admin() {
     const newConcert = {
       name: formData.get("name") as string,
       date: formData.get("date") as string,
+      time: formData.get("time") as string || null, // <-- NOUVEAU
       location: formData.get("location") as string,
       description: formData.get("description") as string,
       imageUrl: formData.get("imageUrl") as string,
       videoUrl: formData.get("videoUrl") as string,
     };
-
     const { error } = await supabase.from("concerts").insert([newConcert]);
 
     setLoading(false);
@@ -79,10 +79,15 @@ export default function Admin() {
           <input type="text" name="name" required className="input input-bordered input-primary w-full bg-base-100" placeholder="Ex: Fête de la musique" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="form-control">
             <label className="label"><span className="label-text opacity-70">Date *</span></label>
             <input type="date" name="date" required className="input input-bordered input-primary w-full bg-base-100" />
+          </div>
+
+          <div className="form-control">
+            <label className="label"><span className="label-text opacity-70">Heure (Optionnel)</span></label>
+            <input type="time" name="time" className="input input-bordered input-primary w-full bg-base-100" />
           </div>
 
           <div className="form-control">

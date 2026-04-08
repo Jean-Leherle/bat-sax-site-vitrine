@@ -16,7 +16,21 @@ const IDEAL_TIME = FALL_DURATION * (90 / 110);
 const MARGIN = 200; 
 const MISS_MARGIN = 500;
 
-export const CREDITS_UNLOCK_SCORE = 1200; // La valeur officielle pour débloquer les crédits
+export const CREDITS_UNLOCK_SCORE = 1200; 
+
+// Note : Toujours trier du plus grand au plus petit pour la fonction de recherche !
+export const COMBO_MULTIPLIERS = [
+  { threshold: 40, value: 4 },
+  { threshold: 20, value: 3 },
+  { threshold: 10, value: 2 },
+  { threshold: 0, value: 1 } // Multiplicateur de base
+];
+
+// Petite fonction utilitaire exportée pour être réutilisable
+export const getComboMultiplier = (currentCombo: number) => {
+  const match = COMBO_MULTIPLIERS.find(m => currentCombo >= m.threshold);
+  return match ? match.value : 1;
+};
 
 export const GAME_MILESTONES = [
   { score: 100, name: "ADAGIO", difficulty: { tracks: ["down"] as TrackId[], minTicks: 4, maxTicks: 6, doubleChance: 0 } },
@@ -100,7 +114,9 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
 
     if (Math.abs(timeElapsed - IDEAL_TIME) < MARGIN) {
       setCombo(c => c + 1);
-      const multiplier = comboRef.current >= 50 ? 4 : (comboRef.current >= 10 ? 2 : 1);
+      
+      const multiplier = getComboMultiplier(comboRef.current);
+      
       setScore(s => s + (10 * multiplier));
       triggerFeedback(track, "success");
       updateArrows(prev => prev.filter(a => a.id !== targetArrow.id));

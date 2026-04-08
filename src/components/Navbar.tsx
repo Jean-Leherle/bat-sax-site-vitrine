@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import AudioPlayer from './AudioPlayer'
 
 export default function Navbar() {
   const { pathname } = useLocation();
@@ -16,6 +17,10 @@ export default function Navbar() {
         >
           BatSax
         </Link>
+      </div>
+
+      <div className="flex-none mx-4">
+        <AudioPlayer />
       </div>
 
       <div className="flex gap-2">
