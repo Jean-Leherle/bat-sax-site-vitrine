@@ -1,4 +1,4 @@
-import { useMiniGame, TRACKS, GAME_MILESTONES } from "../hooks/useMiniGame";
+import { useMiniGame, TRACKS, GAME_MILESTONES, getComboMultiplier } from "../hooks/useMiniGame"; // NOUVEAU : Import de la fonction
 
 type Props = {
   onScoreUpdate?: (score: number) => void;
@@ -7,9 +7,8 @@ type Props = {
 export default function MiniGame({ onScoreUpdate }: Props) {
   const { scoreState, bestScoreState, comboState, arrows, feedbacks, currentActiveTracks, handleTrackHit } = useMiniGame(onScoreUpdate);
 
-  const multiplier = comboState >= 50 ? 4 : (comboState >= 10 ? 2 : 1);
+  const multiplier = getComboMultiplier(comboState);
   
-  // On utilise directement GAME_MILESTONES !
   const nextMilestone = GAME_MILESTONES.find(m => scoreState < m.score) || GAME_MILESTONES[GAME_MILESTONES.length - 1];
 
   return (
