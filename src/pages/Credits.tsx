@@ -52,17 +52,20 @@ export default function Credits() {
         { label: "Passion envahissante", icon: "👀", values: ["Doctor Who", "Doctor Who ?", "Parfois, Doctor Who ...", "Un peu (trop) Doctor Who", "Doctor Qui ?"]}
       ]
     },
-    {
+  {
       name: "Jean",
       description: "Plus c'est grave mieux c'est, et si en plus c'est dans le cadre d'une folie il en sera assurément !",
       photoUrl: "https://placehold.co/400x400/1a1a1a/00ffcc?text=Jean",
       instruments: [
         { name: "Saxophone Baryton" },
         { name: "Mélodica"},
-        { name: "j-sax"}
+        { name: "j-sax"},
+        { name : "bamboo sax"},
+        { name: "piano"},
+        { name: "guitar"}
       ],
       customFields: [
-        { label: "Citation préférée", icon: "💬", values: ["« Je connais un très bon club de kung fu »"] },
+        { label: "Citation préférée", icon: "💬", values: ["« Je connais un très bon club de kung fu »", "un pour tous, tous bourrin"] },
         { label: "Musique préférée", icon: "🎵", values: ["Claire obscure : Monoco theme"] },
         { label: "Jeu préféré", icon: "🎮", values: ["Sifu", "Claire obscure (oui c'est d'un banal...)", "OuterWild"] }
       ]
