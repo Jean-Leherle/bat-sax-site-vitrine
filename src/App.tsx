@@ -7,10 +7,12 @@ import Cursor from "./components/Cursor";
 import Layout from "./components/Layout";
 import Credits from "./pages/Credits";
 import NotFound from "./pages/NotFound";
+import { AudioProvider } from "./contexts/AudioContext";
 
 export default function App() {
   return (
     <BrowserRouter>
+    <AudioProvider>
       <Cursor />
       <Layout>
         <Routes>
@@ -23,6 +25,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
+      </AudioProvider>
     </BrowserRouter>
   );
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import ConcertCard from "../components/ConcertCard";
-import Loading from "../components/Loading"; // 1. On importe votre composant
+import Loading from "../components/Loading";
 import { supabase } from "../supabaseClient";
+import { useAudio } from "../contexts/AudioContext"; 
 
 type Props = {
   mode: "upcoming" | "past";
@@ -11,8 +12,9 @@ export type Concert = {
   id: number;
   name: string;
   date: string;
-  location: string; // "Le Gotham - Troyes"
-  locationLink?: string; // "https://maps.app.goo.gl/..." (le vrai lien de partage Google Maps)
+  time?: string; // format "HH:mm"
+  location: string;
+  locationLink?: string;
   description?: string;
   imageUrl?: string;
   videoUrl?: string;
@@ -23,7 +25,16 @@ export default function Stages({ mode }: Props) {
   const [loading, setLoading] = useState(true);
 
   const title = mode === "upcoming" ? "▶ Prochain boss" : "Sauvegardes précédentes";
-  const jokeSource = ['ton petit frere', 'ton chat', 'le pape', 'Chuck Norris (RIP)', 'un Enderman', 'Bowser', 'ta mère', ]
+  const jokeSource = ['ton petit frere', 'ton chat', 'le pape', 'Chuck Norris (RIP)', 'un Enderman', 'Bowser', 'ta mère'];
+
+  const { playRandomTrack } = useAudio();
+
+  useEffect(() => {
+    playRandomTrack([
+      { title: "Spear of Justice", url: "/music/Spear_of_Justice.ogg" },
+      { title: "Undyne", url: "/music/Undyne.ogg" }
+    ]);
+  }, [mode, playRandomTrack]);
 
   useEffect(() => {
     async function fetchConcerts() {
@@ -38,10 +49,7 @@ export default function Stages({ mode }: Props) {
         query = query.lt('date', today).order('date', { ascending: false });
       }
 
-      // 2. On crée une promesse qui se résout au bout de 1500ms (1.5s)
       const minimumDelay = new Promise(resolve => setTimeout(resolve, 1000));
-
-      // 3. On attend que la requête Supabase ET le délai de 1.5s soient terminés
       const [response] = await Promise.all([query, minimumDelay]);
       
       const { data, error } = response;
@@ -58,7 +66,6 @@ export default function Stages({ mode }: Props) {
     fetchConcerts();
   }, [mode]);
 
-  // 4. On utilise votre composant au lieu du simple texte
   if (loading) return <Loading />;
 
   return (
@@ -69,7 +76,7 @@ export default function Stages({ mode }: Props) {
         <div className="flex flex-col items-center justify-center opacity-50 py-10 gap-4 mt-8">
           <span className="text-4xl grayscale">💽</span>
           <p className="text-sm tracking-widest uppercase font-['Press_Start_2P'] text-center leading-loose">
-            Sauvegarde supprime par <br/> {jokeSource[Math.floor(Math.random()*jokeSource.length)]}
+            Sauvegarde supprimée par <br/> {jokeSource[Math.floor(Math.random()*jokeSource.length)]}
           </p>
         </div>
       ) : (

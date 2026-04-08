@@ -1,4 +1,4 @@
-import { useMiniGame, TRACKS, GAME_MILESTONES } from "../hooks/useMiniGame";
+import { useMiniGame, TRACKS, GAME_MILESTONES, getComboMultiplier } from "../hooks/useMiniGame"; // NOUVEAU : Import de la fonction
 
 type Props = {
   onScoreUpdate?: (score: number) => void;
@@ -7,9 +7,8 @@ type Props = {
 export default function MiniGame({ onScoreUpdate }: Props) {
   const { scoreState, bestScoreState, comboState, arrows, feedbacks, currentActiveTracks, handleTrackHit } = useMiniGame(onScoreUpdate);
 
-  const multiplier = comboState >= 50 ? 4 : (comboState >= 10 ? 2 : 1);
+  const multiplier = getComboMultiplier(comboState);
   
-  // On utilise directement GAME_MILESTONES !
   const nextMilestone = GAME_MILESTONES.find(m => scoreState < m.score) || GAME_MILESTONES[GAME_MILESTONES.length - 1];
 
   return (
@@ -64,7 +63,7 @@ export default function MiniGame({ onScoreUpdate }: Props) {
           >
             
             <div 
-              className={`absolute w-full h-16 top-[80%] border-y-4 flex items-center justify-center transition-colors duration-100 ${
+              className={`absolute w-full h-16 top-[80%] border-y-4 flex items-center justify-center transition-colors duration-100 cursor-none ${
                 feedbacks[track.id] === "success" ? "border-green-500 bg-green-500/30 shadow-[0_0_20px_#22c55e]" : 
                 feedbacks[track.id] === "fail" ? "border-red-500 bg-red-500/30" : "border-primary/50"
               }`}
