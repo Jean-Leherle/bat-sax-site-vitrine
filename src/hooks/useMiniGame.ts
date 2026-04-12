@@ -11,22 +11,34 @@ export const TRACKS = [
 
 export type Arrow = { id: string; startTime: number; status: "active" | "missed"; track: TrackId; };
 
-const FALL_DURATION = 3000;
-const IDEAL_TIME = FALL_DURATION * (90 / 110); 
-const MARGIN = 200; 
-const MISS_MARGIN = 500;
+// ============================================================================
+// --- PARAMÈTRES DU JEU (Modifiez ces valeurs pour équilibrer le gameplay) ---
+// ============================================================================
 
+// Temps
+const FALL_DURATION = 3000; // Temps de chute complet d'une flèche du haut vers le bas de l'écran
+const IDEAL_TIME = FALL_DURATION * (90 / 110); // Le moment parfait pour cliquer (ici à 81% de la chute)
+const MARGIN = 200; // Fenêtre de temps (en ms) pour faire un "Perfect"
+const MISS_MARGIN = 500; // Fenêtre (en ms) où le clic compte comme "Raté" (trop tôt ou trop tard)
+const AUTO_FAIL_MS = IDEAL_TIME + MARGIN + 50;
+const SPAM_PREVENTION_MS = 400; // Temps de "cooldown" (en ms) avant de pouvoir recliquer sur la même piste si on a raté
+const SPAWN_TICK_MS = 250; // Unité de temps rythmique (1 tick = 250ms). Les flèches apparaissent tous les X ticks.
+const INITIAL_SPAWN_DELAY = 2000; // Temps d'attente (en ms) avant de lancer la toute première flèche
+const FEEDBACK_DURATION = 150; // Durée du clignotement (vert ou rouge) de la zone de clic
+
+// Scores
 export const CREDITS_UNLOCK_SCORE = 1200; 
+const BASE_HIT_SCORE = 10; // Points gagnés par note réussie (avant multiplicateur)
+const PENALTY_SCORE = 5; // Points perdus en cas d'erreur (mauvais timing ou flèche ignorée)
 
 // Note : Toujours trier du plus grand au plus petit pour la fonction de recherche !
 export const COMBO_MULTIPLIERS = [
   { threshold: 40, value: 4 },
   { threshold: 20, value: 3 },
   { threshold: 10, value: 2 },
-  { threshold: 0, value: 1 } // Multiplicateur de base
+  { threshold: 0, value: 1 } 
 ];
 
-// Petite fonction utilitaire exportée pour être réutilisable
 export const getComboMultiplier = (currentCombo: number) => {
   const match = COMBO_MULTIPLIERS.find(m => currentCombo >= m.threshold);
   return match ? match.value : 1;
@@ -87,7 +99,7 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
   const triggerFeedback = (track: TrackId, type: "success" | "fail") => {
     setFeedbacks(prev => ({ ...prev, [track]: type }));
     if (feedbackTimers.current[track]) window.clearTimeout(feedbackTimers.current[track]!);
-    feedbackTimers.current[track] = window.setTimeout(() => setFeedbacks(prev => ({ ...prev, [track]: null })), 150);
+    feedbackTimers.current[track] = window.setTimeout(() => setFeedbacks(prev => ({ ...prev, [track]: null })), FEEDBACK_DURATION);
   };
 
   const getDifficulty = (currentScore: number) => {
@@ -101,10 +113,10 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
     
     if (activeIndex === -1) {
       const now = Date.now();
-      if (now - lastMissTime.current[track] < 400) return;
+      if (now - lastMissTime.current[track] < SPAM_PREVENTION_MS) return;
       lastMissTime.current[track] = now;
       triggerFeedback(track, "fail");
-      setScore(s => s - 5);
+      setScore(s => s - PENALTY_SCORE);
       setCombo(0);
       return;
     }
@@ -117,16 +129,16 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
       
       const multiplier = getComboMultiplier(comboRef.current);
       
-      setScore(s => s + (10 * multiplier));
+      setScore(s => s + (BASE_HIT_SCORE * multiplier));
       triggerFeedback(track, "success");
       updateArrows(prev => prev.filter(a => a.id !== targetArrow.id));
     } else {
       const now = Date.now();
-      if (now - lastMissTime.current[track] < 400) return;
+      if (now - lastMissTime.current[track] < SPAM_PREVENTION_MS) return;
 
       lastMissTime.current[track] = now;
       triggerFeedback(track, "fail");
-      setScore(s => s - 5);
+      setScore(s => s - PENALTY_SCORE);
       setCombo(0); 
 
       if (Math.abs(timeElapsed - IDEAL_TIME) < MISS_MARGIN) {
@@ -155,32 +167,39 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
       
       updateArrows(prev => [...prev, ...newArrows]);
 
+      // Se déclenche juste après que la flèche ait quitté la zone de clic.
       window.setTimeout(() => {
         updateArrows(prev => {
           let missedAny = false;
-          const remaining = prev.filter(a => {
+          const updated = prev.map(a => {
+            // Si c'est notre flèche et qu'elle est toujours "active" (non cliquée)
             if (newArrows.some(na => na.id === a.id) && a.status === "active") {
               missedAny = true;
-              triggerFeedback(a.track, "fail");
-              return false; 
+              triggerFeedback(a.track, "fail"); // Flash rouge !
+              return { ...a, status: "missed" } as Arrow; // La flèche devient grise et non-cliquable
             }
-            return newArrows.every(na => na.id !== a.id); 
+            return a;
           });
 
           if (missedAny) {
-            setScore(s => s - 5);
+            setScore(s => s - PENALTY_SCORE);
             setCombo(0); 
           }
-          return remaining;
+          return updated;
         });
+      }, AUTO_FAIL_MS);
+
+      // Se déclenche uniquement quand la flèche a fini de traverser tout l'écran
+      window.setTimeout(() => {
+        updateArrows(prev => prev.filter(a => !newArrows.some(na => na.id === a.id)));
       }, FALL_DURATION + 100);
 
       const ticksRange = diff.maxTicks - diff.minTicks + 1;
       const ticks = Math.floor(Math.random() * ticksRange) + diff.minTicks;
-      timeoutId = window.setTimeout(spawnArrow, ticks * 250);
+      timeoutId = window.setTimeout(spawnArrow, ticks * SPAWN_TICK_MS);
     };
 
-    timeoutId = window.setTimeout(spawnArrow, 2000); 
+    timeoutId = window.setTimeout(spawnArrow, INITIAL_SPAWN_DELAY); 
     return () => window.clearTimeout(timeoutId);
   }, []);
 
