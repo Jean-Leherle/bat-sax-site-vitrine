@@ -31,7 +31,7 @@ export default function Stages({ mode }: Props) {
 
   useEffect(() => {
     playRandomTrack([
-      { title: "Spear of Justice", url: "/music/Spear_of_Justice.ogg" },
+      { title: "Spear of Justice", url: "/music/Spear_of_justice.ogg" },
       { title: "Undyne", url: "/music/Undyne.ogg" }
     ]);
   }, [mode, playRandomTrack]);
