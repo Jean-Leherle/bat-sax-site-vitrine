@@ -6,7 +6,7 @@ export default function Navbar() {
 
   const linkClass = (path: string) =>
     `btn btn-sm ${
-      pathname === path ? "btn-primary" : "btn-ghost"
+      pathname === path ? "btn-primary " : "btn-ghost hover:opacity-80"
     }`;
 
   return (
