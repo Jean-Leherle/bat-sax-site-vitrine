@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react"; // Ne pas oublier d'importer useCallback !
 import { Link } from "react-router-dom";
 import MiniGame from "../components/MiniGame";
 import { CREDITS_UNLOCK_SCORE } from "../hooks/useMiniGame"; 
@@ -7,11 +7,60 @@ import { useAudio } from "../contexts/AudioContext";
 export default function Lobby() {
   const [creditsUnlocked, setCreditsUnlocked] = useState(false);
   
-  const { playRandomTrack, play } = useAudio();
+  // On importe 'pause' de notre hook Audio !
+  const { isPlaying, playRandomTrack, play, pause } = useAudio();
   
-  // Nos deux mémoires pour éviter de spammer le lecteur audio
+  const isPlayingRef = useRef(isPlaying);
+const wasPlayingOnHiddenRef = useRef(false);
+
   const autoPlayAttempted = useRef(false);
   const bossMusicPlayed = useRef(false); 
+  const inactivityTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+  isPlayingRef.current = isPlaying;
+}, [isPlaying]);
+
+  // Fonction qui (re)lance le compte à rebours de 120s
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityTimerRef.current) window.clearTimeout(inactivityTimerRef.current);
+    
+    inactivityTimerRef.current = window.setTimeout(() => {
+      // 2000ms = Le son va mourir en douceur sur 2 secondes
+      pause(2000); 
+    }, 30000); // 120 000 ms = 120 secondes
+  }, [pause]);
+
+  useEffect(() => {
+  const activityEvents = ['keydown', 'mousemove', 'mousedown', 'touchstart'];
+  const handleActivity = () => resetInactivityTimer();
+
+  activityEvents.forEach(event => window.addEventListener(event, handleActivity));
+  resetInactivityTimer();
+
+  const handleVisibilityChange = () => {
+    if (document.hidden) {
+      // On sauvegarde l'état actuel avant de forcer la pause
+      wasPlayingOnHiddenRef.current = isPlayingRef.current;
+      pause(300); 
+    } else {
+      resetInactivityTimer();
+      // On relance UNIQUEMENT si ça jouait avant que l'onglet soit masqué
+      if (wasPlayingOnHiddenRef.current) {
+        play();
+      }
+    }
+  };
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+
+  return () => {
+    activityEvents.forEach(event => window.removeEventListener(event, handleActivity));
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    if (inactivityTimerRef.current) window.clearTimeout(inactivityTimerRef.current);
+    pause(300); 
+  };
+}, [resetInactivityTimer, pause, play]);
+  // ---------------------------------------------------------------------
 
   useEffect(() => {
     const isUnlocked = localStorage.getItem("batsax-credits-unlocked");
@@ -24,31 +73,28 @@ export default function Lobby() {
     ]);
   }, [playRandomTrack]);
 
-  const handleScoreUpdate = (score: number) => {
-    if (score >= CREDITS_UNLOCK_SCORE && !creditsUnlocked) {
-      setCreditsUnlocked(true);
-      localStorage.setItem("batsax-credits-unlocked", "true"); 
-    }
+const handleScoreUpdate = (score: number) => {
+  if (score >= CREDITS_UNLOCK_SCORE && !creditsUnlocked) {
+    setCreditsUnlocked(true);
+    localStorage.setItem("batsax-credits-unlocked", "true"); 
+  }
 
     if (score > 0 && !autoPlayAttempted.current) {
-      autoPlayAttempted.current = true;
-      play(); 
-    }
+    autoPlayAttempted.current = true;
+    play(); 
+  }
 
-    // Si on a plus de 600 points ET qu'on n'a pas encore lancé la musique de boss
-    if (score >= 600 && !bossMusicPlayed.current) {
-      bossMusicPlayed.current = true; // On verrouille pour ne le faire qu'une fois
-      
-      // Le lecteur va automatiquement s'occuper de baisser le son de "sans.", 
-      // charger Megalovania, et remonter le son !
-      playRandomTrack([
-        { title: "MEGALOVANIA", url: "/music/MEGALOVANIA.ogg" }
-      ]);
-    }
-  };
+  if (score >= 600 && !bossMusicPlayed.current) {
+    bossMusicPlayed.current = true; 
+    
+    playRandomTrack([
+      { title: "MEGALOVANIA", url: "/music/MEGALOVANIA.ogg" }
+    ]);
+  }
+};
 
   return (
-    <div className="relative flex flex-col items-center justify-center w-full min-h-[70vh]">
+    <div className="relative flex flex-col items-center justify-center w-full min-h-[85vh] md:min-h-[70vh]">
       
       <MiniGame onScoreUpdate={handleScoreUpdate} />
 

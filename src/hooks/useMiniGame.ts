@@ -208,6 +208,7 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
       const key = e.key.toLowerCase();
       const trackObj = TRACKS.find(t => t.keys.includes(key));
       if (!trackObj) return; 
+      e.preventDefault();
       
       handleTrackHit(trackObj.id);
     };
