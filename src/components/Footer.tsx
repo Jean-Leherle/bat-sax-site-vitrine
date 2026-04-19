@@ -7,9 +7,9 @@ export default function Footer() {
   const linkClass = "hover:text-primary hover:drop-shadow-[0_0_8px_#00ffcc] transition-all duration-300 cursor-none";
 
   return (
-    <footer className="w-full text-xs opacity-70 py-4 border-t border-base-300 mt-12 bg-base-200/50">
+    <footer className="w-full text-xs opacity-70 py-4 border-t border-base-300 bg-base-200/50">
       <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4">
-
+        
         <div className="flex flex-col items-center md:items-end gap-3">
           <a href={instagram} target="_blank" rel="noreferrer" className={`${linkClass} flex items-center gap-2 text-[10px] font-['Press_Start_2P']`}>
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

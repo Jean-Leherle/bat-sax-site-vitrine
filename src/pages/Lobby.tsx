@@ -48,7 +48,7 @@ export default function Lobby() {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center w-full min-h-[70vh]">
+    <div className="relative flex flex-col items-center justify-center w-full min-h-[85vh] md:min-h-[70vh]">
       
       <MiniGame onScoreUpdate={handleScoreUpdate} />
 
