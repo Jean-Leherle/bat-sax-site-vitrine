@@ -64,7 +64,7 @@ export default function Lobby() {
             ▶ Prochain boss
           </Link>
           <Link to="/saves" className="btn btn-outline">
-            Sauvegardes précédentes
+            Sauvegardes
           </Link>
 
           {creditsUnlocked && (
