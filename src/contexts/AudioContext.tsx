@@ -152,6 +152,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     [fadeAudio, getAudio, updateIsPlaying]
   );
 
+  
   const play = useCallback(() => {
     if (!currentTrackRef.current || isPlayingRef.current) return;
 
@@ -231,6 +232,17 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     },
     [fadeAudio, getAudio, updateCurrentTrack, updateIsPlaying]
   );
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        togglePlay(); 
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [togglePlay]);
 
   handleEndedRef.current = () => {
     const tracks = currentTrackListRef.current;
