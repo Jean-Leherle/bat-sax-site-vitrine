@@ -46,3 +46,10 @@ ON public.tracks FOR ALL USING (auth.role() = 'authenticated');
 
 CREATE POLICY "Accès total setlists pour les admins" 
 ON public.concert_tracks FOR ALL USING (auth.role() = 'authenticated');
+
+
+-- ==========================================
+-- 4. FIX COLONNE INUTILE
+-- ==========================================
+
+ALTER TABLE public.concerts DROP COLUMN time;

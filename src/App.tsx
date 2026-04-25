@@ -7,6 +7,8 @@ import Cursor from "./components/Cursor";
 import Layout from "./components/Layout";
 import Credits from "./pages/Credits";
 import NotFound from "./pages/NotFound";
+import ConcertDetails from "./pages/ConcertDetails";
+import TrackDetails from "./pages/TrackDetails";
 import { AudioProvider } from "./contexts/AudioContext";
 
 export default function App() {
@@ -20,6 +22,8 @@ export default function App() {
           <Route path="/next" element={<Stages mode="upcoming" />} />
           <Route path="/saves" element={<Stages mode="past" />} />
           <Route path="/credits" element={<Credits/>}/>
+          <Route path="/concert/:id" element={<ConcertDetails />} />
+          <Route path="/track/:id" element={<TrackDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />

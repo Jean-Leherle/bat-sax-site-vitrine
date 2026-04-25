@@ -107,10 +107,10 @@ const handleScoreUpdate = (score: number) => {
 
         <div className="flex flex-wrap justify-center gap-4 mt-4">
           <Link to="/next" className="btn btn-primary">
-            ▶ Prochain boss
+            Next Stages
           </Link>
           <Link to="/saves" className="btn btn-outline">
-            Sauvegardes
+            Stages Completed
           </Link>
 
           {creditsUnlocked && (

@@ -8,7 +8,7 @@ export type Track = {
   game: string;
   arranger: string | null;
   youtube_link: string | null;
-  arrangement_status: string;
+  //arrangement_status: string;
   play_status: string;
   duration: string | null;
   imageUrl: string | null;
@@ -128,14 +128,14 @@ export default function AdminTracks() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="form-control">
+          {/* <div className="form-control">
             <label className="label"><span className="label-text opacity-70">État de l'arrangement</span></label>
             <select name="arrangement_status" defaultValue={editingTrack?.arrangement_status || "À faire"} className="select select-bordered select-primary bg-base-100 cursor-none">
               <option value="Terminé">✅ Terminé</option>
               <option value="En cours">⏳ En cours</option>
               <option value="À faire">📝 À faire</option>
             </select>
-          </div>
+          </div> */}
           <div className="form-control">
             <label className="label"><span className="label-text opacity-70">Maîtrise du jeu (Live)</span></label>
             <select name="play_status" defaultValue={editingTrack?.play_status || "Déchiffrage"} className="select select-bordered select-primary bg-base-100 cursor-none">
@@ -175,7 +175,7 @@ export default function AdminTracks() {
               <span className="text-lg font-bold text-primary">{t.title}</span>
               <span className="text-xs opacity-60 mt-1 uppercase tracking-wider">{t.franchise} - {t.game}</span>
               <div className="flex gap-3 mt-2 text-xs">
-                <span className="bg-base-300 px-2 py-1 rounded">🎵 {t.arrangement_status}</span>
+                {/* <span className="bg-base-300 px-2 py-1 rounded">🎵 {t.arrangement_status}</span> */}
                 <span className="bg-base-300 px-2 py-1 rounded">🎷 {t.play_status}</span>
               </div>
             </div>
