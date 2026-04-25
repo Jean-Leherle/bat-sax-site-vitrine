@@ -36,12 +36,11 @@ export default function Navbar() {
       {/* Menus de Navigation */}
       <div className="flex gap-1 md:gap-4 ml-1 md:ml-2">
         <Link to="/next" className={linkClass("/next")}>
-          Prochain boss
+          Next Stages
         </Link>
         <Link to="/saves" className={linkClass("/saves")}>
-          {/* "Sauvegardes" suffit sur mobile pour gagner de la place */}
-          <span className="md:hidden">Saves</span>
-          <span className="hidden md:inline">Sauvegardes</span>
+          <span className="md:hidden">Completed</span>
+          <span className="hidden md:inline">Stages Completed</span>
         </Link>
       </div>
     </div>
