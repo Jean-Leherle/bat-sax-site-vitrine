@@ -12,7 +12,6 @@ export type Concert = {
   id: number;
   name: string;
   date: string;
-  time?: string; // format "HH:mm"
   location: string;
   locationLink?: string;
   description?: string;
@@ -24,7 +23,7 @@ export default function Stages({ mode }: Props) {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const title = mode === "upcoming" ? "▶ Prochain boss" : "Sauvegardes";
+  const title = mode === "upcoming" ? "Next Stages" : "Stages Completed";
   const jokeSource = ['ton petit frere', 'ton chat', 'le pape', 'Chuck Norris (RIP)', 'un Enderman', 'Bowser', 'ta mère'];
 
   const { playRandomTrack } = useAudio();
