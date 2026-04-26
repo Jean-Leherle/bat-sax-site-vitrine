@@ -46,7 +46,7 @@ export default function ConcertCard({ concert, isPast }: Props) {
     }) + (hasTime ? ` à ${timePart.replace(':', 'h')}` : '');
     
   // Correction du typo ici
-  const mapsLink = `http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(concert.location)}`;
+  const mapsLink = concert.locationLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(concert.location)}`;
 
   const generateCalendarLink = () => {
     const startDate = new Date(datePart);
@@ -109,7 +109,7 @@ export default function ConcertCard({ concert, isPast }: Props) {
               </a>
 
               <a
-                href={concert.locationLink || mapsLink}
+                href={mapsLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm opacity-70 hover:text-primary transition-colors w-fit hover:scale-105 cursor-none flex items-center gap-2"
