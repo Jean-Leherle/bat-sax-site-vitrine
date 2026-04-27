@@ -5,15 +5,20 @@ import { useNavigate } from 'react-router-dom';
 import AdminConcerts from '../components/admin/AdminConcerts';
 import AdminTracks from '../components/admin/AdminTracks';
 import AdminSetlists from '../components/admin/AdminSetlists';
+import AdminMembers from '../components/admin/AdminMembers';
 
 export default function Admin() {
   const navigate = useNavigate();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [activeTab, setActiveTab] = useState<'concerts' | 'tracks' | 'setlists'>('concerts');
+  const [activeTab, setActiveTab] = useState<
+    'concerts' | 'tracks' | 'setlists' | 'members'
+  >('concerts');
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
       if (!session) {
         navigate('/login');
       } else {
@@ -24,12 +29,18 @@ export default function Admin() {
   }, [navigate]);
 
   if (isCheckingAuth) {
-    return <div className="p-6 text-center neon mt-12">Vérification des habilitations...</div>;
+    return (
+      <div className="p-6 text-center neon mt-12">
+        Vérification des habilitations...
+      </div>
+    );
   }
 
   return (
     <div className="p-4 md:p-6 w-full max-w-6xl mx-auto">
-      <h1 className="neon mb-8 text-3xl text-center">Dashboard Administrateur</h1>
+      <h1 className="neon mb-8 text-3xl text-center">
+        Dashboard Administrateur
+      </h1>
 
       {/* MENUS D'ONGLETS */}
       <div className="flex flex-wrap justify-center gap-4 mb-10 border-b border-gray-800 pb-6">
@@ -51,6 +62,12 @@ export default function Admin() {
         >
           📋 Éditer Setlists
         </button>
+        <button
+          className={`btn cursor-none transition-all duration-300 hover:scale-105 ${activeTab === 'members' ? 'btn-primary shadow-[0_0_15px_#00ffcc]' : 'btn-outline'}`}
+          onClick={() => setActiveTab('members')}
+        >
+          👥 Équipe
+        </button>
       </div>
 
       {/* AFFICHAGE DU COMPOSANT SÉLECTIONNÉ */}
@@ -58,6 +75,7 @@ export default function Admin() {
         {activeTab === 'concerts' && <AdminConcerts />}
         {activeTab === 'tracks' && <AdminTracks />}
         {activeTab === 'setlists' && <AdminSetlists />}
+        {activeTab === 'members' && <AdminMembers />}
       </div>
     </div>
   );

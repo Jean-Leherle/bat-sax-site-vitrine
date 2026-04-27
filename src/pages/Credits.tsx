@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom"; // Pour gérer ?m=pierre
+import { supabase } from "../supabaseClient";
 
 // --- DÉFINITIONS DES TYPES ---
 type Instrument = {
@@ -13,6 +15,8 @@ type CustomField = {
 };
 
 type Member = {
+  id: number;
+  slug: string; // NOUVEAU
   name: string;
   description: string;
   photoUrl: string;
@@ -21,105 +25,78 @@ type Member = {
 };
 
 export default function Credits() {
-  // --- LES DONNÉES ---
-  const members: Member[] = [
-    {
-      name: "Pierre",
-      description: "Il se débrouille bien pour arranger les morceaux, mais pas plus d'un par semaine.",
-      photoUrl: "https://placehold.co/400x400/1a1a1a/00ffcc?text=Pierre",
-      instruments: [
-        { name: "Saxophone Alto" },
-        { name: "Mélodica à ses heures perdues"}
-      ],
-      customFields: [
-        { label: "Citation préférée", icon: "💬", values: ["« Pas plus d'un par semaine ! »", "« J'ai dit pas plus d'un par semaine, hein Jean ! »", "« On reprend à B pour Jean »", "« Moins vite William, moins vite ! »"] },
-        { label: "Musique préférée", icon: "🎵", values: ["Dire Dire Docks (Mario 64)"] },
-        { label: "Jeu préféré", icon: "🎮", values: ["Wordle"] },
-        { label : "Saveur de yaourt préférée", icon: "🥛", values: ["Noix de coco"] }
-      ]
-    },
-    {
-      name: "William",
-      description: "Il peut jouer de presque 10 instruments différents mais n'est toujours pas capable de jouer au bon tempo.",
-      photoUrl: "https://placehold.co/400x400/1a1a1a/00ffcc?text=William",
-      instruments: [
-        { name: "Saxophone Soprano" }
-      ],
-      customFields: [
-        { label: "Citation préférée", icon: "💬", values: ["« Paul je comprends pas ce que tu dis »", "« Venez on le refait mais 10x plus vite »"] },
-        { label: "Musique préférée", icon: "🎵", values: ["Rayman origins : food boss"] },
-        { label: "Jeu préféré", icon: "🎮", values: ["Portal", "Rayman origins"] },
-        { label: "Passion envahissante", icon: "👀", values: ["Doctor Who", "Doctor Who ?", "Parfois, Doctor Who ...", "Un peu (trop) Doctor Who", "Doctor Qui ?"]}
-      ]
-    },
-  {
-      name: "Jean",
-      description: "Plus c'est grave mieux c'est, et si en plus c'est dans le cadre d'une folie il en sera assurément !",
-      photoUrl: "https://placehold.co/400x400/1a1a1a/00ffcc?text=Jean",
-      instruments: [
-        { name: "Saxophone Baryton" },
-        { name: "Mélodica"},
-        { name: "j-sax"},
-        { name : "bamboo sax"},
-        { name: "piano"},
-        { name: "guitar"}
-      ],
-      customFields: [
-        { label: "Citation préférée", icon: "💬", values: ["« Je connais un très bon club de kung fu »", "un pour tous, tous bourrin"] },
-        { label: "Musique préférée", icon: "🎵", values: ["Claire obscure : Monoco theme"] },
-        { label: "Jeu préféré", icon: "🎮", values: ["Sifu", "Claire obscure (oui c'est d'un banal...)", "OuterWild"] }
-      ]
-    },
-    {
-      name: "Paul",
-      description: "Le boss de la batterie. Même pas besoin de partoche, l'adaptation c'est sa clé !",
-      photoUrl: "https://placehold.co/400x400/1a1a1a/00ffcc?text=Paul",
-      instruments: [
-        { name: "Batterie" },
-        { name: "Piano" }
-      ],
-      customFields: [
-        { label: "Citation préférée", icon: "💬", values: ["« Je vois pas vos pieds ! »"] },
-        { label: "Musique préférée", icon: "🎵", values: ["Whiplash"] },
-        { label: "Jeu préféré", icon: "🎮", values: ["Doom Eternal", "Crypt of the NecroDancer"] }
-      ]
-    },
-  ];
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [members, setMembers] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // --- LES ÉTATS ---
+  // --- LES ÉTATS DU LECTEUR ---
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
-  
-  // Le minuteur global automatique
   const [tick, setTick] = useState(0);
-  
   const [manualOffsets, setManualOffsets] = useState<Record<string, number>>({});
 
-  // Réinitialiser les décalages quand on change de membre (pour que ça reparte à zéro propre)
+  // 1. Récupération des données depuis Supabase
+  useEffect(() => {
+    const fetchMembers = async () => {
+      const { data, error } = await supabase.from('members').select('*').order('id', { ascending: true });
+      if (!error && data) {
+        setMembers(data as Member[]);
+      }
+      setLoading(false);
+    };
+    fetchMembers();
+  }, []);
+
+  // 2. Gestion du lien direct (Deep Linking)
+  useEffect(() => {
+    if (members.length > 0) {
+      const urlMemberSlug = searchParams.get('m');
+      if (urlMemberSlug) {
+        const targetMember = members.find(m => m.slug === urlMemberSlug);
+        if (targetMember) {
+          setSelectedMember(targetMember);
+        }
+      }
+    }
+  }, [members, searchParams]);
+
+  // Réinitialiser les décalages quand on change de membre
   useEffect(() => {
     setManualOffsets({});
   }, [selectedMember]);
+
+  // Le minuteur global automatique
+  useEffect(() => {
+    const interval = setInterval(() => setTick((prev) => prev + 1), 10000); 
+    return () => clearInterval(interval);
+  }, []);
 
   const handleManualTick = (e: React.MouseEvent, fieldKey: string) => {
     e.stopPropagation();
     setManualOffsets(prev => ({
       ...prev,
-      [fieldKey]: (prev[fieldKey] || 0) + 1 // Ajoute +1 seulement à ce champ !
+      [fieldKey]: (prev[fieldKey] || 0) + 1
     }));
   };
 
-  // Le minuteur de 10 secondes (il ne se remet plus à zéro au clic, il tourne en fond tranquillement)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTick((prev) => prev + 1);
-    }, 10000); 
-    return () => clearInterval(interval);
-  }, []);
+  // --- FONCTIONS D'OUVERTURE ET FERMETURE ---
+  const openProfile = (member: Member) => {
+    setSelectedMember(member);
+    setSearchParams({ m: member.slug }); // Met à jour l'URL : ?m=pierre
+  };
 
-  const handleCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
+  const closeProfile = () => {
+    setSelectedMember(null);
+    searchParams.delete('m'); // Nettoie l'URL quand on ferme la modale
+    setSearchParams(searchParams);
+  };
+
+  const handleCloseModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      setSelectedMember(null);
+      closeProfile();
     }
   };
+
+  if (loading) return <div className="p-6 text-center neon mt-12">Loading Roster...</div>;
 
   return (
     <div className="p-6 text-center flex flex-col items-center w-full relative">
@@ -128,17 +105,18 @@ export default function Credits() {
 
       {/* GRILLE DES MEMBRES */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
-        {members.map((member, i) => {
-          const currentInstrument = member.instruments[0];
+        {members.map((member) => {
+          // Sécurité au cas où la base de données aurait un JSON mal formé
+          const currentInstrument = member.instruments?.[0] || { name: "Instrument inconnu" };
           
           return (
             <div
-              key={i}
-              onClick={() => setSelectedMember(member)}
+              key={member.id}
+              onClick={() => openProfile(member)}
               className="border border-primary p-4 rounded-xl hover:scale-105 transition-all hover:shadow-[0_0_15px_#00ffcc] bg-[#0a0a0a] cursor-none overflow-hidden"
             >
               <h2 className="neon text-lg">{member.name}</h2>
-              <p key={currentInstrument.name} className="text-sm mt-1 opacity-80 animate-slide-right">
+              <p className="text-sm mt-1 opacity-80 animate-slide-right">
                 {currentInstrument.name}
               </p>
             </div>
@@ -149,13 +127,13 @@ export default function Credits() {
       {/* MODALE DE PRÉSENTATION */}
       {selectedMember && (
         <div
-          onClick={handleCloseModal}
+          onClick={handleCloseModalClick}
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
         >
-          <div className="bg-[#0a0a0a] border border-primary shadow-[0_0_30px_rgba(0,255,204,0.2)] rounded-xl p-6 w-full max-w-md relative animate-pop-in">
+          <div className="bg-[#0a0a0a] border border-primary shadow-[0_0_30px_rgba(0,255,204,0.2)] rounded-xl p-6 w-full max-w-md relative animate-pop-in custom-scrollbar overflow-y-auto max-h-[90vh]">
             
             <button
-              onClick={() => setSelectedMember(null)}
+              onClick={closeProfile}
               className="absolute top-4 right-4 text-primary opacity-70 hover:opacity-100 hover:scale-110 transition-all font-bold text-xl cursor-none"
             >
               ✕
@@ -173,6 +151,8 @@ export default function Credits() {
                 <h2 className="neon text-2xl">{selectedMember.name}</h2>
                 
                 {(() => {
+                  if (!selectedMember.instruments || selectedMember.instruments.length === 0) return null;
+                  
                   const instTotalTicks = tick + (manualOffsets['instruments'] || 0);
                   const currentInst = selectedMember.instruments[instTotalTicks % selectedMember.instruments.length];
                   const isMultipleInst = selectedMember.instruments.length > 1;
@@ -206,7 +186,9 @@ export default function Credits() {
                   {selectedMember.description}
                 </p>
 
-                {selectedMember.customFields.map((field, idx) => {
+                {(selectedMember.customFields || []).map((field, idx) => {
+                  if (!field.values || field.values.length === 0) return null;
+
                   const fieldTotalTicks = tick + (manualOffsets[field.label] || 0);
                   const currentValue = field.values[fieldTotalTicks % field.values.length];
                   const isMultipleValue = field.values.length > 1;

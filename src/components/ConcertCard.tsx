@@ -148,7 +148,7 @@ export default function ConcertCard({ concert, isPast }: Props) {
             {concert.imageUrl && (
               <img
                 src={concert.imageUrl}
-                alt={`Souvenir de ${concert.name}`}
+                alt={`Photo de ${concert.name}`}
                 className="w-full h-56 object-cover rounded-lg border border-gray-700 opacity-80 group-hover:opacity-100 transition-opacity duration-300"
               />
             )}
