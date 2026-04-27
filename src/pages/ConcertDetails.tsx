@@ -101,7 +101,7 @@ export default function ConcertDetails() {
       {/* --- BLOC 2 : MÉDIAS --- */}
       {(concert.imageUrl || concert.videoUrl) && (
         <div className="bg-[#050505] border border-gray-800 p-8 rounded-xl">
-          <h2 className="text-xl font-bold text-gray-400 mb-8 border-b border-gray-800 pb-3 font-['Press_Start_2P'] text-[12px] tracking-widest">SOUVENIRS</h2>
+          <h2 className="text-xl font-bold text-gray-400 mb-8 border-b border-gray-800 pb-3 font-['Press_Start_2P'] text-[12px] tracking-widest">{new Date(concert.date).getTime()>Date.now() ? 'TEASERS':'SOUVENIRS'}</h2>
           
           <div className="flex flex-col gap-8">
             {concert.imageUrl && (
