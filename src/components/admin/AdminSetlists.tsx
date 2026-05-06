@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
-import { type  Concert } from "./AdminConcerts";
+import {  type Concert } from "../../pages/Stages";
 import { type Track } from "./AdminTracks";
 
 type ConcertTrack = {
