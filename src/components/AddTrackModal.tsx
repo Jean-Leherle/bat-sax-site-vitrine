@@ -31,7 +31,7 @@ export default function AddTrackModal({
   const [searchResults, setSearchResults] = useState<RawgGame[]>([]);
   const [selectedGame, setSelectedGame] = useState<RawgGame | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [, setHasSearched] = useState(false);
 
   // Données étendues pour les doublons
   const [existingTracks, setExistingTracks] = useState<ExistingTrack[]>([]);
