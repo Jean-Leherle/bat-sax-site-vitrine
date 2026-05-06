@@ -101,7 +101,7 @@ export default function Credits() {
   return (
     <div className="p-6 text-center flex flex-col items-center w-full relative">
       <h1 className="neon text-3xl mb-2">Crédits</h1>
-      <p className="text-sm opacity-70 mb-8">L'équipe batSax</p>
+      <p className="text-sm opacity-70 mb-8">L'équipe BatSax</p>
 
       {/* GRILLE DES MEMBRES */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">

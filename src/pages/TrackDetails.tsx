@@ -125,7 +125,7 @@ export default function TrackDetails() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-[#050505] p-6 border border-gray-800 rounded-xl">
-          <h3 className="text-primary font-bold mb-6 font-['Press_Start_2P'] text-[10px]">NEXT STAGES</h3>
+          <h3 className="text-primary font-bold mb-6 font-['Press_Start_2P'] text-[10px]">PROCHAIN NIVEAU</h3>
           <div className="flex flex-col gap-3">
             {concerts.filter(c => new Date(c.date).getTime() >= today).length === 0 && <p className="text-xs opacity-50 italic">Aucune date prévue...</p>}
             {concerts.filter(c => new Date(c.date).getTime() >= today).map(c => (
@@ -138,7 +138,7 @@ export default function TrackDetails() {
         </div>
 
         <div className="bg-[#050505] p-6 border border-gray-800 rounded-xl opacity-80">
-          <h3 className="text-gray-400 font-bold mb-6 font-['Press_Start_2P'] text-[10px]">STAGES COMPLETED</h3>
+          <h3 className="text-gray-400 font-bold mb-6 font-['Press_Start_2P'] text-[10px]">NIVEAU TERMINE</h3>
           <div className="flex flex-col gap-3">
             {concerts.filter(c => new Date(c.date).getTime() < today).length === 0 && <p className="text-xs opacity-50 italic">Jamais joué en public.</p>}
             {concerts.filter(c => new Date(c.date).getTime() < today).map(c => (

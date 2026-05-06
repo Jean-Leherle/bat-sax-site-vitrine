@@ -6,32 +6,46 @@ import AdminConcerts from '../components/admin/AdminConcerts';
 import AdminTracks from '../components/admin/AdminTracks';
 import AdminSetlists from '../components/admin/AdminSetlists';
 import AdminMembers from '../components/admin/AdminMembers';
+import AdminCommunity from "../components/admin/AdminCommunity";
 
 export default function Admin() {
   const navigate = useNavigate();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [activeTab, setActiveTab] = useState<
-    'concerts' | 'tracks' | 'setlists' | 'members'
-  >('concerts');
+  const [activeTab, setActiveTab] = useState<"concerts" | "members" | "tracks" | "setlists" | "community">("concerts");
 
   useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { session }
-      } = await supabase.auth.getSession();
+    const checkUserAndRole = async () => {
+      // 1. On vérifie la session globale
+      const { data: { session } } = await supabase.auth.getSession();
+      
       if (!session) {
         navigate('/login');
+        return;
+      }
+
+      // 2. On vérifie le RÔLE dans la table profiles
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!profile || profile.role !== 'admin') {
+        alert("🔒 Accès refusé : Vous n'êtes pas administrateur.");
+        // Si c'est un fan qui a fouillé, on le renvoie à l'accueil
+        navigate('/');
       } else {
         setIsCheckingAuth(false);
       }
     };
-    checkUser();
+    
+    checkUserAndRole();
   }, [navigate]);
 
   if (isCheckingAuth) {
     return (
       <div className="p-6 text-center neon mt-12">
-        Vérification des habilitations...
+        Vérification des habilitations de sécurité...
       </div>
     );
   }
@@ -62,6 +76,12 @@ export default function Admin() {
         >
           📋 Éditer Setlists
         </button>
+        <button 
+          onClick={() => setActiveTab("community")} 
+          className={`tab tab-bordered cursor-none ${activeTab === "community" ? "tab-active text-primary border-primary" : ""}`}
+        >
+          💬 Suggestions
+        </button>
         <button
           className={`btn cursor-none transition-all duration-300 hover:scale-105 ${activeTab === 'members' ? 'btn-primary shadow-[0_0_15px_#00ffcc]' : 'btn-outline'}`}
           onClick={() => setActiveTab('members')}
@@ -76,6 +96,7 @@ export default function Admin() {
         {activeTab === 'tracks' && <AdminTracks />}
         {activeTab === 'setlists' && <AdminSetlists />}
         {activeTab === 'members' && <AdminMembers />}
+        {activeTab === "community" && <AdminCommunity />}
       </div>
     </div>
   );

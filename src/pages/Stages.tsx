@@ -23,7 +23,7 @@ export default function Stages({ mode }: Props) {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const title = mode === "upcoming" ? "Next Stages" : "Stages Completed";
+  const title = mode === "upcoming" ? "Prochain niveau" : "Niveau terminé";
   const jokeSource = ['ton petit frere', 'ton chat', 'le pape', 'Chuck Norris (RIP)', 'un Enderman', 'Bowser', 'ta mère'];
 
   const { playRandomTrack } = useAudio();
