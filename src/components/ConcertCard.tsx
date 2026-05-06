@@ -81,10 +81,16 @@ export default function ConcertCard({ concert, isPast }: Props) {
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}&location=${location}`;
   };
 
+  const thumbnail = Array.isArray(concert.imageUrl) && concert.imageUrl.length > 0 
+    ? concert.imageUrl[0] 
+    : null;
+
+  // On vérifie s'il y a du contenu additionnel pour savoir si on affiche le bloc du bas
+  const hasMedia = thumbnail || (Array.isArray(concert.videoUrl) && concert.videoUrl.length > 0);
+
   return (
     <div
       onClick={handleCardClick}
-      // Padding passé à p-6 pour plus d'aération globale
       className={`group border p-6 rounded-xl transition-all bg-[#0a0a0a] hover:shadow-[0_0_20px_#00ffcc] flex flex-col justify-between cursor-none ${isCompleted ? 'border-green-500' : 'border-primary'}`}
     >
       <div className="flex flex-col gap-6">
@@ -95,7 +101,6 @@ export default function ConcertCard({ concert, isPast }: Props) {
               {concert.name}
             </h2>
 
-            {/* Les liens date et lieu sont maintenant espacés avec gap-2 */}
             <div className="flex flex-col gap-2">
               <a
                 href={generateCalendarLink()}
@@ -135,22 +140,32 @@ export default function ConcertCard({ concert, isPast }: Props) {
         </div>
 
         {concert.description && (
-          // Même style de description que sur la page détails
-          <p className="text-sm opacity-90 leading-relaxed border-l-2 border-primary pl-4 py-2 bg-white/5 rounded-r-lg italic">
+          <p className="text-sm opacity-90 leading-relaxed border-l-2 border-primary pl-4 py-2 bg-white/5 rounded-r-lg italic line-clamp-3">
             {concert.description}
           </p>
         )}
       </div>
 
       <div className="flex flex-col gap-4 mt-6">
-        {isPast && (concert.imageUrl || concert.videoUrl) && (
+        {hasMedia && (
           <div className="pt-6 border-t border-gray-800">
-            {concert.imageUrl && (
-              <img
-                src={concert.imageUrl}
-                alt={`Photo de ${concert.name}`}
-                className="w-full h-56 object-cover rounded-lg border border-gray-700 opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-              />
+            {thumbnail && (
+              <div className="relative w-full h-56 rounded-lg overflow-hidden border border-gray-700 bg-[#111]">
+                <img
+                  src={thumbnail}
+                  alt={`Souvenir de ${concert.name}`}
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "https://placehold.co/600x400/1a1a1a/ff0000?text=Erreur+Image";
+                  }}
+                />
+                {((concert.imageUrl?.length || 0) + (concert.videoUrl?.length || 0)) > 1 && (
+                  <div className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-1 rounded font-bold backdrop-blur-sm">
+                    + d'images et vidéo
+                  </div>
+                )}
+              </div>
             )}
           </div>
         )}
