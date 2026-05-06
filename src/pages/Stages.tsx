@@ -15,8 +15,8 @@ export type Concert = {
   location: string;
   locationLink?: string;
   description?: string;
-  imageUrl?: string;
-  videoUrl?: string;
+  imageUrl?: string[];
+  videoUrl?: string[];
 };
 
 export default function Stages({ mode }: Props) {

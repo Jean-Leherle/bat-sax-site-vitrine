@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
+import type { Concert } from '../../pages/Stages'; 
 
-export type Concert = {
-  id: number;
-  name: string;
-  date: string; // Contient maintenant la date et l'heure (Timestamp)
-  location: string;
-  locationLink?: string;
-};
 
-// Notre nouveau détective qui gère la règle de minuit !
+
 export const extractDateTime = (c: Concert | null) => {
   if (!c || !c.date) return { date: '', time: '' };
   
