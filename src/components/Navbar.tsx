@@ -36,7 +36,6 @@ export default function Navbar() {
 
   return (
     <div className="w-full bg-base-200 border-b border-base-300 px-3 lg:px-6 py-2 flex flex-wrap items-center justify-between gap-y-3 gap-x-4 z-50">
-      
       <div className="flex flex-wrap items-center justify-between sm:justify-start gap-4 flex-grow lg:flex-none">
         <Link
           to="/"
@@ -75,10 +74,14 @@ export default function Navbar() {
         {session && (
           <button
             onClick={handleLogout}
-            className="inline-flex items-center justify-center px-3 py-1.5 lg:py-2 rounded-lg text-error opacity-70 hover:opacity-100 hover:bg-error/10 hover:shadow-[0_0_10px_rgba(255,0,0,0.3)] ml-1 lg:ml-2 cursor-none transition-all flex-shrink-0"
+            className="inline-flex items-center justify-center px-3 py-1.5 lg:py-2 rounded-lg 
+            text-error  border-error/20 bg-transparent
+            transition-all duration-300 ease-in-out cursor-none
+            hover:bg-error hover:text-white hover:shadow-[0_0_10px_rgba(255,0,0,0.3)] 
+            ml-1 lg:ml-2 flex-shrink-0"
             title="Se déconnecter"
           >
-            ⏻
+            <span className="text-xl leading-none">⏻</span>
           </button>
         )}
       </div>
