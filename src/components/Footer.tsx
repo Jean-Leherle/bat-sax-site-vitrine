@@ -25,7 +25,7 @@ export default function Footer() {
         </div>
 
         <div className="flex justify-center flex-col gap-2 text-[10px] font-['Press_Start_2P'] tracking-widest">
-          <Link to={'/login'} className={linkClass}>ADMIN</Link> 
+          <Link to={'/login'} className={linkClass}>CONNEXION</Link> 
           <Link to={'/credits'} className={linkClass}>CREDITS</Link>
         </div>
 
