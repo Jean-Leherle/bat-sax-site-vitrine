@@ -203,13 +203,21 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        (e.target as HTMLElement).isContentEditable
+      ) {
+        return; 
+      }
+
       const key = e.key.toLowerCase();
       const trackObj = TRACKS.find(t => t.keys.includes(key));
       if (!trackObj) return; 
-      e.preventDefault();
       
+      e.preventDefault(); // On bloque uniquement si c'est une touche de jeu ET qu'on n'est pas dans un input
       handleTrackHit(trackObj.id);
     };
 
