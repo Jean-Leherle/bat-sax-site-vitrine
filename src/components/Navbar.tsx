@@ -13,6 +13,7 @@ export default function Navbar() {
   // États pour l'édition du pseudo
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
+  const [notification, setNotification] = useState<{ message: string; type: 'error' | 'success' } | null>(null);
 
   useEffect(() => {
     // 1. Initialisation de la session
@@ -52,8 +53,14 @@ export default function Navbar() {
     navigate('/');
   };
 
+  // Afficher une notification temporaire
+  const showNotification = (message: string, type: 'error' | 'success' = 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
   // 4. Fonction de sauvegarde du pseudo
- const handleSaveName = async () => {
+  const handleSaveName = async () => {
     const newName = editName.trim();
 
     // Si inchangé, on ferme juste l'édition
@@ -72,11 +79,11 @@ export default function Navbar() {
     if (error) {
       // Analyse de l'erreur renvoyée par les contraintes SQL
       if (error.message.includes('username_length_check')) {
-        alert("⚠️ Le pseudo doit contenir entre 3 et 15 caractères.");
+        showNotification("⚠️ Le pseudo doit contenir entre 3 et 15 caractères.");
       } else if (error.message.includes('username_banned_content_check')) {
-        alert("🛑 Ce pseudo contient un terme non autorisé.");
+        showNotification("🛑 Ce pseudo contient un terme non autorisé.");
       } else {
-        alert("Erreur lors de la modification du pseudo.");
+        showNotification("Erreur lors de la modification du pseudo.");
         console.error(error);
       }
       // On remet l'ancien nom en cas d'échec
@@ -84,6 +91,7 @@ export default function Navbar() {
     } else {
       // Succès
       setProfile({ ...profile, username: newName });
+      showNotification("✅ Pseudo modifié avec succès.", 'success');
     }
     
     setIsEditing(false);
@@ -99,6 +107,17 @@ export default function Navbar() {
   return (
     <div className="w-full bg-base-200 border-b border-base-300 px-3 lg:px-6 py-2 flex flex-wrap items-center justify-between gap-y-3 gap-x-4 z-50">
       
+      {/* NOTIFICATION */}
+      {notification && (
+        <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 z-50 ${
+          notification.type === 'error' 
+            ? 'bg-red-900/80 text-red-100 border border-red-700' 
+            : 'bg-green-900/80 text-green-100 border border-green-700'
+        }`}>
+          {notification.message}
+        </div>
+      )}
+
       {/* GROUPE 1 : LOGO + LECTEUR */}
       <div className="flex flex-wrap items-center justify-between sm:justify-start gap-4 flex-grow lg:flex-none">
         <Link
@@ -155,10 +174,12 @@ export default function Navbar() {
               <input 
                 type="text" 
                 value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                onBlur={handleSaveName} // Sauvegarde quand on clique ailleurs
-                onKeyDown={(e) => e.key === 'Enter' && handleSaveName()} // Sauvegarde avec Entrée
+                onChange={(e) => setEditName(e.target.value.slice(0, 15))}
+                onBlur={handleSaveName}
+                onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
                 autoFocus
+                minLength={3}
+                maxLength={15}
                 className="input input-xs input-bordered w-24 bg-[#050505] text-primary border-primary cursor-none focus:outline-none"
               />
             ) : (
