@@ -7,11 +7,12 @@ import AdminTracks from '../components/admin/AdminTracks';
 import AdminSetlists from '../components/admin/AdminSetlists';
 import AdminMembers from '../components/admin/AdminMembers';
 import AdminCommunity from "../components/admin/AdminCommunity";
+import AdminMedia from "../components/admin/AdminMedia";
 
 export default function Admin() {
   const navigate = useNavigate();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [activeTab, setActiveTab] = useState<"concerts" | "members" | "tracks" | "setlists" | "community">("concerts");
+  const [activeTab, setActiveTab] = useState<"concerts" | "members" | "tracks" | "setlists" | "community" | "media">("concerts");
 
   useEffect(() => {
     const checkUserAndRole = async () => {
@@ -65,6 +66,12 @@ export default function Admin() {
           📅 Concerts
         </button>
         <button
+          className={`btn cursor-none transition-all duration-300 ${activeTab === 'media' ? 'btn-primary shadow-[0_0_15px_#00ffcc]' : 'btn-outline'}`}
+          onClick={() => setActiveTab('media')}
+        >
+          🖼️ Médiathèque
+        </button>
+        <button
           className={`btn cursor-none transition-all duration-300 hover:scale-105 hover:shadow-[0_0_15px_#00ffcc] ${activeTab === 'tracks' ? 'btn-primary shadow-[0_0_10px_#00ffcc]' : 'btn-outline'}`}
           onClick={() => setActiveTab('tracks')}
         >
@@ -95,6 +102,7 @@ export default function Admin() {
         {activeTab === 'concerts' && <AdminConcerts />}
         {activeTab === 'tracks' && <AdminTracks />}
         {activeTab === 'setlists' && <AdminSetlists />}
+        {activeTab === 'media' && <AdminMedia />}
         {activeTab === 'members' && <AdminMembers />}
         {activeTab === "community" && <AdminCommunity />}
       </div>
