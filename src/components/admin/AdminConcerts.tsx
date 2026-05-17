@@ -61,6 +61,18 @@ export default function AdminConcerts() {
   const removeFromDynamicList = (setter: React.Dispatch<React.SetStateAction<string[]>>, list: string[], index: number) => {
     setter(list.filter((_, i) => i !== index));
   };
+  
+  const moveDynamicItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, list: string[], index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === list.length - 1) return;
+
+    const newList = [...list];
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    // On échange les positions
+    [newList[index], newList[newIndex]] = [newList[newIndex], newList[index]];
+    setter(newList);
+  };
 
   const handleSaveConcert = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -188,6 +200,23 @@ export default function AdminConcerts() {
             {dynamicImages.length === 0 && <span className="text-xs opacity-40 italic">Aucune photo pour le moment.</span>}
             {dynamicImages.map((url, i) => (
               <div key={i} className="flex gap-3 w-full items-center relative">
+                <div className="flex flex-col gap-0.5 shrink-0 bg-black/40 rounded p-1">
+                  <button 
+                    type="button"
+                    onClick={() => moveDynamicItem(setDynamicImages, dynamicImages, i, 'up')}
+                    disabled={i === 0}
+                    className="text-[10px] opacity-50 hover:opacity-100 px-2 disabled:opacity-10 hover:text-primary cursor-none transition-opacity"
+                    title="Monter"
+                  >▲</button>
+                  <button 
+                    type="button"
+                    onClick={() => moveDynamicItem(setDynamicImages, dynamicImages, i, 'down')}
+                    disabled={i === dynamicImages.length - 1}
+                    className="text-[10px] opacity-50 hover:opacity-100 px-2 disabled:opacity-10 hover:text-primary cursor-none transition-opacity"
+                    title="Descendre"
+                  >▼</button>
+                </div>
+
                 {/* APERÇU MINIATURE IMAGE */}
                 <div className="w-12 h-12 shrink-0 rounded bg-base-300 border border-gray-700 overflow-hidden flex items-center justify-center">
                   {url ? (
