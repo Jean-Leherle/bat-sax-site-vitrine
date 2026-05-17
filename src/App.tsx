@@ -9,7 +9,8 @@ import Credits from "./pages/Credits";
 import NotFound from "./pages/NotFound";
 import ConcertDetails from "./pages/ConcertDetails";
 import TrackDetails from "./pages/TrackDetails";
-import Community from "./pages/Community"; // NOUVEAU
+import Community from "./pages/Community";
+import Privacy from "./pages/Privacy";
 import { AudioProvider } from "./contexts/AudioContext";
 
 export default function App() {
@@ -27,7 +28,8 @@ export default function App() {
           <Route path="/track/:id" element={<TrackDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/community" element={<Community />} /> {/* NOUVEAU */}
+          <Route path="/community" element={<Community />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>

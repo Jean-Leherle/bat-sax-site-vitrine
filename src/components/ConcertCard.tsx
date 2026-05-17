@@ -150,18 +150,20 @@ export default function ConcertCard({ concert, isPast }: Props) {
         {hasMedia && (
           <div className="pt-6 border-t border-gray-800">
             {thumbnail && (
-              <div className="relative w-full h-56 rounded-lg overflow-hidden border border-gray-700 bg-[#111]">
+              // 1. On remplace "h-56" par "min-h-[200px]"
+              <div className="relative w-full min-h-[200px] rounded-lg overflow-hidden border border-gray-700 bg-[#111] flex items-center justify-center">
                 <img
                   src={thumbnail}
                   alt={`Souvenir de ${concert.name}`}
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-transform duration-500 group-hover:scale-105"
+                  // 2. On remplace "h-full" par "h-auto min-h-[200px]"
+                  className="w-full h-auto min-h-[200px] object-cover opacity-80 group-hover:opacity-100 transition-transform duration-500 group-hover:scale-105 block"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = "https://placehold.co/600x400/1a1a1a/ff0000?text=Erreur+Image";
                   }}
                 />
                 {((concert.imageUrl?.length || 0) + (concert.videoUrl?.length || 0)) > 1 && (
-                  <div className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-1 rounded font-bold backdrop-blur-sm">
+                  <div className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-1 rounded font-bold backdrop-blur-sm z-10">
                     + d'images et vidéo
                   </div>
                 )}
