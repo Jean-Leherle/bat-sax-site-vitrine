@@ -22,6 +22,9 @@ export default function Footer() {
           <a href={"mailto:" + mail} target="_blank" rel="noreferrer" className={`${linkClass} flex items-center gap-2`}>
             ✉️ {mail}
           </a>
+          <Link to="/privacy" className={linkClass}>
+            🔒 Confidentialité
+          </Link>
         </div>
 
         <div className="flex justify-center flex-col gap-2 text-[10px] font-['Press_Start_2P'] tracking-widest">
