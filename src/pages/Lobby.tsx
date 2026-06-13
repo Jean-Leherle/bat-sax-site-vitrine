@@ -6,6 +6,9 @@ import { useAudio } from "../contexts/AudioContext";
 
 export default function Lobby() {
   const [creditsUnlocked, setCreditsUnlocked] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(true);
+  const [menuManuallyVisible, setMenuManuallyVisible] = useState(false);
+  const lastScoreRef = useRef(0);
   
   // On importe 'pause' de notre hook Audio !
   const { isPlaying, playRandomTrack, play, pause } = useAudio();
@@ -74,6 +77,20 @@ const wasPlayingOnHiddenRef = useRef(false);
   }, [playRandomTrack]);
 
 const handleScoreUpdate = (score: number) => {
+  const previousScore = lastScoreRef.current;
+  const gainedPoints = score > previousScore;
+
+  if (previousScore <= 100 && score > 100) {
+    setMenuVisible(false);
+  }
+
+  if (menuManuallyVisible && gainedPoints) {
+    setMenuVisible(false);
+    setMenuManuallyVisible(false);
+  }
+
+  lastScoreRef.current = score;
+
   if (score >= CREDITS_UNLOCK_SCORE && !creditsUnlocked) {
     setCreditsUnlocked(true);
     localStorage.setItem("batsax-credits-unlocked", "true"); 
@@ -98,7 +115,21 @@ const handleScoreUpdate = (score: number) => {
       
       <MiniGame onScoreUpdate={handleScoreUpdate} />
 
-      <div className="text-center flex flex-col items-center gap-8 z-10 p-6 bg-black/40 rounded-3xl backdrop-blur-sm border border-gray-900 transition-all duration-500">
+      {!menuVisible && (
+        <button
+          type="button"
+          onClick={() => {
+            setMenuVisible(true);
+            setMenuManuallyVisible(true);
+          }}
+          className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/70 px-3 py-3 text-xl text-white shadow-xl transition hover:bg-white/10"
+          aria-label="Afficher le menu"
+        >
+          ▶
+        </button>
+      )}
+
+      <div className={`text-center flex flex-col items-center gap-8 z-10 p-6 bg-black/40 rounded-3xl backdrop-blur-sm border border-gray-900 transition-all duration-500 ${menuVisible ? "opacity-100 translate-x-0" : "pointer-events-none opacity-0 translate-x-4"}`}>
         <h1 className="text-4xl neon">BatSax</h1>
 
         <p className="text-sm opacity-70 max-w-md">

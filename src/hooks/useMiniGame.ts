@@ -102,6 +102,16 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
     feedbackTimers.current[track] = window.setTimeout(() => setFeedbacks(prev => ({ ...prev, [track]: null })), FEEDBACK_DURATION);
   };
 
+  const handleMiss = (track: TrackId) => {
+    const now = Date.now();
+    if (now - lastMissTime.current[track] < SPAM_PREVENTION_MS) return false;
+    lastMissTime.current[track] = now;
+    triggerFeedback(track, "fail");
+    setScore(s => s - PENALTY_SCORE);
+    setCombo(0);
+    return true;
+  };
+
   const getDifficulty = (currentScore: number) => {
     const milestone = GAME_MILESTONES.find(m => currentScore < m.score) || GAME_MILESTONES[GAME_MILESTONES.length - 1];
     return milestone.difficulty;
@@ -112,12 +122,7 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
     const activeIndex = currentArrows.findIndex(a => a.status === "active" && a.track === track);
     
     if (activeIndex === -1) {
-      const now = Date.now();
-      if (now - lastMissTime.current[track] < SPAM_PREVENTION_MS) return;
-      lastMissTime.current[track] = now;
-      triggerFeedback(track, "fail");
-      setScore(s => s - PENALTY_SCORE);
-      setCombo(0);
+      handleMiss(track);
       return;
     }
 
@@ -133,13 +138,7 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
       triggerFeedback(track, "success");
       updateArrows(prev => prev.filter(a => a.id !== targetArrow.id));
     } else {
-      const now = Date.now();
-      if (now - lastMissTime.current[track] < SPAM_PREVENTION_MS) return;
-
-      lastMissTime.current[track] = now;
-      triggerFeedback(track, "fail");
-      setScore(s => s - PENALTY_SCORE);
-      setCombo(0); 
+      if (!handleMiss(track)) return;
 
       if (Math.abs(timeElapsed - IDEAL_TIME) < MISS_MARGIN) {
         updateArrows(prev => {
@@ -175,6 +174,7 @@ export function useMiniGame(onScoreUpdate?: (score: number) => void) {
             // Si c'est notre flèche et qu'elle est toujours "active" (non cliquée)
             if (newArrows.some(na => na.id === a.id) && a.status === "active") {
               missedAny = true;
+              lastMissTime.current[a.track] = Date.now();
               triggerFeedback(a.track, "fail"); // Flash rouge !
               return { ...a, status: "missed" } as Arrow; // La flèche devient grise et non-cliquable
             }
