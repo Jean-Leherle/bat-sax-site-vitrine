@@ -9,7 +9,7 @@ export default function NotFound() {
       <div className="flex flex-col items-center gap-4">
         <span className="text-5xl grayscale opacity-80">👾</span>
         <h2 className="text-xl font-['Press_Start_2P'] uppercase tracking-widest leading-loose">
-          Level Not Found
+          Page introuvable
         </h2>
       </div>
 
@@ -18,7 +18,7 @@ export default function NotFound() {
       </p>
 
       <Link to="/" className="btn btn-primary mt-8 font-['Press_Start_2P'] text-[10px] tracking-widest">
-        RETURN TO LOBBY
+        Retour au lobby
       </Link>
     </div>
   );

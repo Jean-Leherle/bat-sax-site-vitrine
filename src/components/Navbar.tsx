@@ -122,6 +122,7 @@ export default function Navbar() {
       <div className="flex flex-wrap items-center justify-between sm:justify-start gap-4 flex-grow lg:flex-none">
         <Link
           to="/"
+          title="Revenir au lobby"
           className="flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-none"
         >
           <img
@@ -141,17 +142,18 @@ export default function Navbar() {
 
       {/* GROUPE 2 : NAVIGATION + PROFIL + DÉCONNEXION */}
       <div className="flex flex-grow items-center justify-center lg:justify-end gap-2 overflow-x-auto custom-scrollbar pb-1 lg:pb-0">
+        <Link to="/" className={linkClass('/')}>Lobby</Link>
         <Link to="/community" className={linkClass('/community')}>
           <span className="lg:hidden">Jukebox</span>
-          <span className="hidden lg:inline">Liste de souhait</span>
+          <span className="hidden lg:inline">Jukebox</span>
         </Link>
         <Link to="/next" className={linkClass('/next')}>
-          <span className="lg:hidden">Prochain</span>
-          <span className="hidden lg:inline">Prochain niveau</span>
+          <span className="lg:hidden">À venir</span>
+          <span className="hidden lg:inline">Concerts à venir</span>
         </Link>
         <Link to="/saves" className={linkClass('/saves')}>
-          <span className="lg:hidden">Terminé</span>
-          <span className="hidden lg:inline">Niveau terminé</span>
+          <span className="lg:hidden">Passés</span>
+          <span className="hidden lg:inline">Concerts passés</span>
         </Link>
 
         {/* AFFICHAGE DU PROFIL ET BOUTONS UTILISATEUR */}

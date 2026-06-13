@@ -18,7 +18,7 @@ export default function MiniGame({ onScoreUpdate }: Props) {
         
         <div className="flex flex-col items-start gap-1">
           <span className="text-[8px] md:text-[10px] font-['Press_Start_2P'] text-primary opacity-80">
-            NEXT: {nextMilestone.name}
+            Objectif : {nextMilestone.name}
           </span>
           <span className="text-xs md:text-sm font-['Press_Start_2P'] text-white/80">
             {nextMilestone.score === Infinity ? "MAX" : nextMilestone.score.toString().padStart(5, "0")}
