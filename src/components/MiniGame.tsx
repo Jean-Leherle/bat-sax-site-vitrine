@@ -1,4 +1,5 @@
-import { useMiniGame, TRACKS, GAME_MILESTONES, getComboMultiplier } from "../hooks/useMiniGame"; // NOUVEAU : Import de la fonction
+import { Link } from "react-router-dom";
+import { useMiniGame, TRACKS, GAME_MILESTONES, getComboMultiplier, CREDITS_UNLOCK_SCORE } from "../hooks/useMiniGame"; // NOUVEAU : Import de la fonction
 
 type Props = {
   onScoreUpdate?: (score: number) => void;
@@ -18,7 +19,7 @@ export default function MiniGame({ onScoreUpdate }: Props) {
         
         <div className="flex flex-col items-start gap-1">
           <span className="text-[8px] md:text-[10px] font-['Press_Start_2P'] text-primary opacity-80">
-            NEXT: {nextMilestone.name}
+            Objectif : {nextMilestone.name}
           </span>
           <span className="text-xs md:text-sm font-['Press_Start_2P'] text-white/80">
             {nextMilestone.score === Infinity ? "MAX" : nextMilestone.score.toString().padStart(5, "0")}
@@ -34,10 +35,21 @@ export default function MiniGame({ onScoreUpdate }: Props) {
         
       </div>
 
-      <div className="absolute top-10 flex flex-col items-center gap-1">
+      <div className="absolute top-14 md:top-16 flex flex-col items-center gap-1">
         <span className="text-xs font-['Press_Start_2P'] tracking-widest text-primary opacity-80">SCORE</span>
         <span className="text-4xl neon text-white">{scoreState.toString().padStart(5, "0")}</span>
-        
+        <div className="min-h-[1.75rem]">
+          {scoreState >= CREDITS_UNLOCK_SCORE ? (
+            <Link
+              to="/credits"
+              className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-yellow-500 bg-black/60 px-2 py-1 text-[10px] uppercase tracking-widest font-['Press_Start_2P'] text-yellow-400 shadow-[0_0_15px_rgba(234,179,8,0.5)] transition-all hover:bg-yellow-500 hover:text-black animate-bounce"
+            >
+              <span className="text-lg">⭐</span>
+              CREDITS
+            </Link>
+          ) : null}
+        </div>
+
         {comboState > 2 && (
           <div className="flex items-center gap-4 mt-2 animate-pulse">
             <span className="text-sm font-['Press_Start_2P'] text-yellow-400">{comboState} COMBO</span>
