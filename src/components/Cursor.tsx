@@ -1,6 +1,12 @@
 import { useEffect, useRef } from "react";
 
 export default function Cursor() {
+  const isTouch = typeof window !== "undefined" && (
+    'ontouchstart' in window || (navigator as any).maxTouchPoints > 0 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
+  );
+
+  if (isTouch) return null; // Désactive le curseur sur mobile / écrans tactiles
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const trail = useRef({ x: 0, y: 0 });

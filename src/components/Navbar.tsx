@@ -7,6 +7,8 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   
@@ -138,10 +140,19 @@ export default function Navbar() {
         <div className="flex-none">
           <AudioPlayer />
         </div>
+        {/* Bouton hamburger mobile */}
+        <button
+          type="button"
+          onClick={() => setMobileOpen(v => !v)}
+          className="lg:hidden inline-flex items-center justify-center p-2 rounded-md border border-transparent hover:border-white/10 text-white/90 bg-black/30"
+          aria-label="Ouvrir le menu"
+        >
+          <span className="text-lg">{mobileOpen ? '✕' : '☰'}</span>
+        </button>
       </div>
 
       {/* GROUPE 2 : NAVIGATION + PROFIL + DÉCONNEXION */}
-      <div className="flex flex-grow items-center justify-center lg:justify-end gap-2 overflow-x-auto custom-scrollbar pb-1 lg:pb-0">
+      <div className="hidden lg:flex flex-grow items-center justify-center lg:justify-end gap-2 overflow-x-auto custom-scrollbar pb-1 lg:pb-0">
         <Link to="/" className={linkClass('/')}>Lobby</Link>
         <Link to="/community" className={linkClass('/community')}>
           <span className="lg:hidden">Jukebox</span>
@@ -205,6 +216,44 @@ export default function Navbar() {
           </div>
         )}
       </div>
+
+      {/* Menu mobile accordéon */}
+      {mobileOpen && (
+        <div className="lg:hidden w-full px-3 pt-2 pb-3 bg-base-200 border-t border-base-300 z-40">
+          <div className="flex flex-col gap-2">
+            <Link to="/" onClick={() => setMobileOpen(false)} className={linkClass('/')}>Lobby</Link>
+            <Link to="/community" onClick={() => setMobileOpen(false)} className={linkClass('/community')}>Jukebox</Link>
+            <Link to="/next" onClick={() => setMobileOpen(false)} className={linkClass('/next')}>Concerts à venir</Link>
+            <Link to="/saves" onClick={() => setMobileOpen(false)} className={linkClass('/saves')}>Concerts passés</Link>
+
+            {session && profile && (
+              <div className="flex items-center gap-3 pt-2 border-t border-gray-800 mt-2">
+                {profile.role === 'admin' && (
+                  <Link to="/admin" onClick={() => setMobileOpen(false)} className="text-xl">⚙️</Link>
+                )}
+                <div className="flex items-center gap-2">
+                  {isEditing ? (
+                    <input 
+                      type="text" 
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value.slice(0, 15))}
+                      onBlur={handleSaveName}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
+                      autoFocus
+                      minLength={3}
+                      maxLength={15}
+                      className="input input-xs input-bordered w-24 bg-[#050505] text-primary border-primary"
+                    />
+                  ) : (
+                    <span onClick={() => setIsEditing(true)} className="text-sm font-bold">{profile.username}</span>
+                  )}
+                </div>
+                <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="ml-auto inline-flex items-center px-3 py-1.5 rounded-lg text-error border-error/20">⏻</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
