@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import AudioPlayer from './AudioPlayer';
+import { useNews } from '../contexts/NewsContext';
 
 export default function Navbar() {
   const { pathname } = useLocation();
@@ -11,6 +12,7 @@ export default function Navbar() {
 
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const { unreadCount, markAllSeen } = useNews();
   
   // États pour l'édition du pseudo
   const [isEditing, setIsEditing] = useState(false);
@@ -158,9 +160,27 @@ export default function Navbar() {
           <span className="lg:hidden">Jukebox</span>
           <span className="hidden lg:inline">Jukebox</span>
         </Link>
-        <Link to="/next" className={linkClass('/next')}>
-          <span className="lg:hidden">À venir</span>
-          <span className="hidden lg:inline">Concerts à venir</span>
+        <Link
+          to="/next"
+          className={linkClass('/next')}
+          onClick={async () => {
+            try {
+              markAllSeen();
+              if (session && session.user && session.user.id) {
+                await supabase
+                  .from('profiles')
+                  .update({ last_news_seen_at: new Date().toISOString() })
+                  .eq('id', session.user.id);
+              }
+            } catch (e) {
+              // ignore
+            }
+          }}
+        >
+          <span className={unreadCount > 0 ? 'text-yellow-400 lg:text-yellow-400' : ''}>
+            <span className="lg:hidden">À venir</span>
+            <span className="hidden lg:inline">Concerts à venir</span>
+          </span>
         </Link>
         <Link to="/saves" className={linkClass('/saves')}>
           <span className="lg:hidden">Passés</span>
@@ -223,7 +243,24 @@ export default function Navbar() {
           <div className="flex flex-col gap-2">
             <Link to="/" onClick={() => setMobileOpen(false)} className={linkClass('/')}>Lobby</Link>
             <Link to="/community" onClick={() => setMobileOpen(false)} className={linkClass('/community')}>Jukebox</Link>
-            <Link to="/next" onClick={() => setMobileOpen(false)} className={linkClass('/next')}>Concerts à venir</Link>
+            <Link
+              to="/next"
+              onClick={async () => {
+                try {
+                  markAllSeen();
+                  if (session && session.user && session.user.id) {
+                    await supabase
+                      .from('profiles')
+                      .update({ last_news_seen_at: new Date().toISOString() })
+                      .eq('id', session.user.id);
+                  }
+                } catch (e) {}
+                setMobileOpen(false);
+              }}
+              className={linkClass('/next')}
+            >
+              Concerts à venir
+            </Link>
             <Link to="/saves" onClick={() => setMobileOpen(false)} className={linkClass('/saves')}>Concerts passés</Link>
 
             {session && profile && (
